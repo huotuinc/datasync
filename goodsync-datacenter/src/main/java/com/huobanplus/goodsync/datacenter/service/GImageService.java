@@ -34,6 +34,4 @@ public interface GImageService {
      * @return
      */
     SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId);
-
-
 }
