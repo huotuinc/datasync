@@ -14,7 +14,7 @@ public class MallSpecValuesBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Spec_Value_Id")
-    private int specValueId;
+    private Integer specValueId;
     @Column(name = "Spec_Id")
     private int specId;
     @Transient
@@ -31,4 +31,6 @@ public class MallSpecValuesBean {
     private long supplierId;
     @Column(name = "Supplier_Spec_Value_Id")
     private int supplierSpecValueId;
+    @Column(name = "Customer_Id")
+    private int customerId;
 }

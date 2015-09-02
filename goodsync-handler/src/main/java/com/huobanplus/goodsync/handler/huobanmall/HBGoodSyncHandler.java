@@ -27,6 +27,12 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
     private GoodsTypeService goodsTypeService;
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private GImageService gImageService;
+    @Autowired
+    private SpecificationService specificationService;
+    @Autowired
+    private SpecValueService specValueService;
 
     @Override
     public AuthorBaseBean authorization(AuthorBaseBean authorBase) {
@@ -64,7 +70,21 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
         goodsService.handleAssociatedInfo(goodsResult.getTargetList(), goodsCatResult.getSyncInfoList(), brandSyncInfoList, goodsTypeResult.getSyncInfoList());
 
         //导出商品图片及保存前后关联id
-        
+        List<MallGImagesBean> originalGoodImgList = gImageService.findByCustomerId(loginCustomerId);
+        SyncResultBean<MallGImagesBean> goodImgResult = gImageService.batchSave(originalGoodImgList, hbAuthorBean.getCustomerId());
+        gImageService.handleAssociatedInfo(goodImgResult.getTargetList(), goodsResult.getSyncInfoList());
+
+        //继续更新商品图片相关的字段，必须在商品图片表添加之后
+        goodsService.handleDefaultImg(goodsResult.getTargetList(), goodImgResult.getSyncInfoList());
+
+        //导出商品规格到目标商户并保存前后关联id
+        List<MallSpecificationBean> originalSpecList = specificationService.findByCustomerId(loginCustomerId);
+        SyncResultBean<MallSpecificationBean> specResult = specificationService.batchSave(originalSpecList, hbAuthorBean.getCustomerId());
+        //导出规格值到目标商户并保存前后关联id
+        List<MallSpecValuesBean> originalSpecValueList = specValueService.findByCustomerId(loginCustomerId);
+        SyncResultBean<MallSpecValuesBean> specValueResult = specValueService.batchSave(originalSpecValueList, hbAuthorBean.getCustomerId());
+        //处理specId
+        specValueService.handleSpecId(specValueResult.getTargetList(), specValueResult.getSyncInfoList());
     }
 
     @Override

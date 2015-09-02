@@ -47,4 +47,12 @@ public interface GoodsService {
      * @param targetList
      */
     void handleAssociatedInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsCatSyncInfo, List<MallSyncInfoBean> brandSyncInfo, List<MallSyncInfoBean> goodsTypeSyncInfo);
+
+    /**
+     * 处理商品默认图片
+     *
+     * @param targetList
+     * @param goodsImgSyncInfo
+     */
+    void handleDefaultImg(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsImgSyncInfo);
 }

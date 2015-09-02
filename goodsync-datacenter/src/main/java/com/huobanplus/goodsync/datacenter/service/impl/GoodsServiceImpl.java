@@ -69,4 +69,13 @@ public class GoodsServiceImpl implements GoodsService {
             goodsRepository.save(targetGood);
         });
     }
+
+    @Override
+    public void handleDefaultImg(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsImgSyncInfo) {
+        targetList.forEach(target -> {
+            int targetImgId = syncInfoService.getTargetId(Integer.parseInt(target.getImageDefault()), Constant.GOOD_Img, goodsImgSyncInfo);
+            target.setImageDefault(String.valueOf(targetImgId));
+            goodsRepository.save(target);
+        });
+    }
 }

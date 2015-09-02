@@ -1,6 +1,7 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.huobanplus.goodsync.datacenter.bean.MallGImagesBean;
+import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
 import java.util.List;
@@ -34,4 +35,12 @@ public interface GImageService {
      * @return
      */
     SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId);
+
+    /**
+     * 处理相关联字段，及goodsId
+     *
+     * @param targetList
+     * @param goodSyncInfoList
+     */
+    void handleAssociatedInfo(List<MallGImagesBean> targetList, List<MallSyncInfoBean> goodSyncInfoList);
 }
