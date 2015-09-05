@@ -7,7 +7,9 @@ import com.huobanplus.goodsync.handler.bean.AuthorBaseBean;
 import com.huobanplus.goodsync.handler.bean.HBAuthorBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,12 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
     private SpecificationService specificationService;
     @Autowired
     private SpecValueService specValueService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private GoodsTypeSpecService goodsTypeSpecService;
+    @Autowired
+    private GoodsSpecIndexService specIndexService;
 
     @Override
     public AuthorBaseBean authorization(AuthorBaseBean authorBase) {
@@ -47,7 +55,8 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
     }
 
     @Override
-    public void goodExport(AuthorBaseBean authorBase, int loginCustomerId) {
+    @Transactional
+    public void goodExport(AuthorBaseBean authorBase, int loginCustomerId) throws IOException {
         HBAuthorBean hbAuthorBean = (HBAuthorBean) authorBase;
         //导出brand及保存前后关联id
         List<MallBrandBean> originalBrandList = brandService.findByCustomerId(loginCustomerId);
@@ -85,6 +94,30 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
         SyncResultBean<MallSpecValuesBean> specValueResult = specValueService.batchSave(originalSpecValueList, hbAuthorBean.getCustomerId());
         //处理specId
         specValueService.handleSpecId(specValueResult.getTargetList(), specValueResult.getSyncInfoList());
+
+        //导出货品到目标商户并保存前后关联id
+        List<MallProductBean> originalProductList = productService.findByCustomerId(loginCustomerId);
+        SyncResultBean<MallProductBean> productResult = productService.batchSave(originalProductList, hbAuthorBean.getCustomerId());
+        //处理关联字段
+        productService.handleAssociatedInfo(productResult.getTargetList(), goodsResult.getSyncInfoList(), specResult.getSyncInfoList(), specValueResult.getSyncInfoList());
+
+        //处理商品中的关联冗余字段，spec,pdt_spec,spec_desc
+        goodsService.handleSpecAndPdtInfo(goodsResult.getTargetList(), specResult.getSyncInfoList(), productResult.getSyncInfoList(), specValueResult.getSyncInfoList());
+
+        //导出goodstypedesc信息到目标商户
+        List<MallGoodsTypeSpecBean> originalTypeSpec = goodsTypeSpecService.findByCustomerId(loginCustomerId);
+        goodsTypeSpecService.batchSave(originalTypeSpec, hbAuthorBean.getCustomerId(), specResult.getSyncInfoList(), goodsTypeResult.getSyncInfoList());
+
+
+        //导出goodsSpecIndex信息到目标商户
+        List<MallGoodsSpecIndexBean> originalSpecIndex = specIndexService.findByCustomerId(loginCustomerId);
+        specIndexService.batchSave(originalSpecIndex,
+                hbAuthorBean.getCustomerId(),
+                goodsTypeResult.getSyncInfoList(),
+                specResult.getSyncInfoList(),
+                specValueResult.getSyncInfoList(),
+                goodsResult.getSyncInfoList(),
+                productResult.getSyncInfoList());
     }
 
     @Override

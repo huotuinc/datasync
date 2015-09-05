@@ -7,19 +7,11 @@ import lombok.Data;
  */
 @Data
 public class MallGoodsSpecIndexBean {
-    private MallSpecValuesBean specValuesBean;
     private Integer specValueId;
     private String specValue;
-
-    private MallProductBean productBean;
     private int productId;
-
-    private MallGoodsTypeBean goodsTypeBean;
     private int typeId;
-
-    private MallSpecificationBean specificationBean;
     private int specId;
-
-    private MallGoodsBean goodBean;
     private int goodsId;
+    private int customerId;
 }

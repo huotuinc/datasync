@@ -14,4 +14,5 @@ public class MallGoodsTypeSpecBean {
     private int typeId;
     private MallGoodsTypeBean goodsType;
     private String specStyle;
+    private int customerId;
 }

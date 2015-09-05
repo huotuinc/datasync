@@ -2,6 +2,8 @@ package com.huobanplus.goodsync.handler;
 
 import com.huobanplus.goodsync.handler.bean.AuthorBaseBean;
 
+import java.io.IOException;
+
 /**
  * 商品相关数据导入导出处理
  * <p>导出导入规则相对web端登陆的伙伴商城用户</p>
@@ -27,7 +29,7 @@ public interface GoodSyncHandler {
     /**
      * 商品数据导出
      */
-    void goodExport(AuthorBaseBean authorBase, int loginCustomerId);
+    void goodExport(AuthorBaseBean authorBase, int loginCustomerId) throws IOException;
 
     /**
      * 商品数据导入

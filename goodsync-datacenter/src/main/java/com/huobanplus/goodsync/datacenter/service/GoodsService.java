@@ -1,7 +1,9 @@
 package com.huobanplus.goodsync.datacenter.service;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.huobanplus.goodsync.datacenter.bean.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,7 +28,7 @@ public interface GoodsService {
     List<MallGoodsBean> findByCustomerId(int customerId);
 
     /**
-     * 导入商品到目标上海沪
+     * 导入商品到目标商户
      *
      * @param originalGoodsList 需要导入的原始数据
      * @param targetCustomerId  目标商户id
@@ -55,4 +57,20 @@ public interface GoodsService {
      * @param goodsImgSyncInfo
      */
     void handleDefaultImg(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsImgSyncInfo);
+
+    /**
+     * 处理规格，货品等相关联数据
+     * <p>需要处理的字段：</p>
+     * <ul>
+     * <li>spec</li>
+     * <li>pdt_desc</li>
+     * <li>spec_desc</li>
+     * </ul>
+     *
+     * @param targetList
+     * @param specSyncInfo
+     * @param productSyncInfo
+     * @param specValueSyncInfo
+     */
+    void handleSpecAndPdtInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> productSyncInfo, List<MallSyncInfoBean> specValueSyncInfo) throws IOException;
 }

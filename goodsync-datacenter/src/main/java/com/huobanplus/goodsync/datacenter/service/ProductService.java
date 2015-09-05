@@ -1,7 +1,10 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
+import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
+import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,9 +29,24 @@ public interface ProductService {
     MallProductBean save(MallProductBean productBean);
 
     /**
-     * 批量保存
-     *
-     * @param productBeans
+     * 导入货品到目标商户
+     * @param originalList
+     * @param targetCustomerId
+     * @return
      */
-    void batchSave(List<MallProductBean> productBeans);
+    SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList,int targetCustomerId);
+
+    /**
+     * 处理关联字段
+     * <p>需要处理的字段</p>
+     * <ul>
+     * <li>goodId</li>
+     * <li>props</li>
+     * </ul>
+     *
+     * @param targetList
+     * @param specSyncInfoList
+     * @param specValueSyncInfoList
+     */
+    void handleAssociatedInfo(List<MallProductBean> targetList, List<MallSyncInfoBean> goodSyncInfoList, List<MallSyncInfoBean> specSyncInfoList, List<MallSyncInfoBean> specValueSyncInfoList) throws IOException;
 }

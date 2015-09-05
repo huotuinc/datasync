@@ -1,13 +1,14 @@
-package com.huobanplus.goodsync.datacenter.repository.impl;
+package com.huobanplus.goodsync.datacenter.dao.impl;
 
-import com.huobanplus.goodsync.datacenter.repository.AccountRepository;
+import com.huobanplus.goodsync.datacenter.dao.AccountDao;
+import com.huobanplus.goodsync.datacenter.dao.impl.BaseDaoImpl;
 import org.springframework.stereotype.Repository;
 
 /**
  * Created by liual on 2015-09-02.
  */
 @Repository
-public class AccountRepositoryImpl extends BaseDaoImpl implements AccountRepository {
+public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
     @Override
     public int findByAccountAndPassword(String account, String password) {

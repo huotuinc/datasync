@@ -1,7 +1,11 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.json.GoodPdtDesc;
+import com.huobanplus.goodsync.datacenter.json.GoodSpecDesc;
 import com.huobanplus.goodsync.datacenter.repository.GoodsRepository;
 import com.huobanplus.goodsync.datacenter.service.BrandService;
 import com.huobanplus.goodsync.datacenter.service.GoodsService;
@@ -10,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liual on 2015-09-02.
@@ -46,6 +53,11 @@ public class GoodsServiceImpl implements GoodsService {
             syncInfo.setFromCustomerId(originalGood.getCustomerId());
             originalGood.setGoodsId(null);
             originalGood.setCustomerId(targetCustomerId);
+            originalGood.setPriceLevelDesc(null);
+            originalGood.setRebateQuatoSetting(null);
+            originalGood.setRebateSaleSetting(null);
+            originalGood.setRebateMode(0);
+            originalGood.setIndividuation(0);
             MallGoodsBean target = goodsRepository.save(originalGood);
             syncInfo.setToId(target.getGoodsId());
             syncInfo.setToCustomerId(targetCustomerId);
@@ -77,5 +89,39 @@ public class GoodsServiceImpl implements GoodsService {
             target.setImageDefault(String.valueOf(targetImgId));
             goodsRepository.save(target);
         });
+    }
+
+    @Override
+    public void handleSpecAndPdtInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> productSyncInfo, List<MallSyncInfoBean> specValueSyncInfo) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        for (MallGoodsBean target : targetList) {
+            //处理spec
+            Map<String, String> originalSpec = objectMapper.readValue(target.getSpec(), Map.class);
+            Map<String, String> targetSpec = new HashMap<>();
+            originalSpec.entrySet().forEach(entry -> {
+                int specId = Integer.parseInt(entry.getKey());
+                int targetSpecId = syncInfoService.getTargetId(specId, Constant.SPEC, specSyncInfo);
+                targetSpec.put(String.valueOf(targetSpecId), entry.getValue());
+            });
+            target.setSpec(objectMapper.writeValueAsString(targetSpec));
+            //处理pdt_desc
+            List<GoodPdtDesc> pdtDescList = objectMapper.readValue(target.getPdtDesc(), List.class);
+            pdtDescList.forEach(pdtDesc -> {
+                int targetProductId = syncInfoService.getTargetId(pdtDesc.getProductId(), Constant.PRODUCT, productSyncInfo);
+                pdtDesc.setProductId(targetProductId);
+            });
+            target.setPdtDesc(objectMapper.writeValueAsString(pdtDescList));
+            //处理spec_desc
+            List<GoodSpecDesc> specDescList = objectMapper.readValue(target.getSpecDesc(), List.class);
+            specDescList.forEach(specDesc -> {
+                int targetSpecId = syncInfoService.getTargetId(specDesc.getSpecId(), Constant.SPEC, specSyncInfo);
+                int targetSpecValueId = syncInfoService.getTargetId(specDesc.getSpecValueId(), Constant.SPEC_VALUE, specValueSyncInfo);
+                specDesc.setSpecId(targetSpecId);
+                specDesc.setSpecValueId(targetSpecValueId);
+            });
+            target.setSpecDesc(objectMapper.writeValueAsString(specDescList));
+            goodsRepository.save(target);
+        }
+
     }
 }

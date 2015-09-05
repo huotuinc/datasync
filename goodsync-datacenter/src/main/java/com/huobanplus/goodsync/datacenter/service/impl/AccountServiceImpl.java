@@ -1,6 +1,6 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
-import com.huobanplus.goodsync.datacenter.repository.AccountRepository;
+import com.huobanplus.goodsync.datacenter.dao.AccountDao;
 import com.huobanplus.goodsync.datacenter.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccountServiceImpl implements AccountService {
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountDao accountDao;
 
     @Override
     public int login(String account, String password) {
-        return accountRepository.findByAccountAndPassword(account, password);
+        return accountDao.findByAccountAndPassword(account, password);
     }
 }
