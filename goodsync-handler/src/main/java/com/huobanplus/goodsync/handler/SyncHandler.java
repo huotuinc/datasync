@@ -1,6 +1,8 @@
 package com.huobanplus.goodsync.handler;
 
 import com.huobanplus.goodsync.handler.bean.AuthorBaseBean;
+import com.huobanplus.goodsync.handler.bean.ExportResult;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 import java.io.IOException;
 
@@ -12,7 +14,7 @@ import java.io.IOException;
  * <p>2.从其他平台导入的数据将覆盖登录商户中的相关商品数据</p>
  * Created by liual on 2015-09-01.
  */
-public interface GoodSyncHandler {
+public interface SyncHandler {
     /**
      * 平台授权
      * <p>不同平台自定义授权方式</p>
@@ -28,8 +30,13 @@ public interface GoodSyncHandler {
 
     /**
      * 商品数据导出
+     *
+     * @param authorBase
+     * @param loginCustomerId 当前登录商户id
+     * @param goodList        待导出的商品列表，逗号分隔，all表示全部
+     * @throws IOException
      */
-    void goodExport(AuthorBaseBean authorBase, int loginCustomerId) throws IOException;
+    void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList) throws IOException,DatabaseException, CloneNotSupportedException;
 
     /**
      * 商品数据导入

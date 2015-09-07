@@ -34,7 +34,7 @@ public interface GoodsCatService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallGoodsCatBean> batchSave(List<MallGoodsCatBean> originalBeans, int targetCustomerId);
+    SyncResultBean<MallGoodsCatBean> batchSave(List<MallGoodsCatBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException;
 
     /**
      * 处理商品分类内部相关联的id

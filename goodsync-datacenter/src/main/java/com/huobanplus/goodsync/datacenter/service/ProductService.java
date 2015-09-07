@@ -34,7 +34,7 @@ public interface ProductService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList,int targetCustomerId);
+    SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList,int targetCustomerId) throws CloneNotSupportedException;
 
     /**
      * 处理关联字段

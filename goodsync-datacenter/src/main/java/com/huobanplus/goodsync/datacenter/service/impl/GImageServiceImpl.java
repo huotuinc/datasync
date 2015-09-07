@@ -37,23 +37,24 @@ public class GImageServiceImpl implements GImageService {
     }
 
     @Override
-    public SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId) {
+    public SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGImagesBean> targetImageList = new ArrayList<>();
-        originalImages.forEach(originalImage -> {
+        for (MallGImagesBean original : originalImages) {
             MallSyncInfoBean syncInfo = new MallSyncInfoBean();
-            syncInfo.setFromId(originalImage.getGimageId());
-            syncInfo.setFromCustomerId(originalImage.getCustomerId());
-            originalImage.setGimageId(null);
-            originalImage.setCustomerId(targetCustomerId);
-            MallGImagesBean target = gImagesRepository.save(originalImage);
+            syncInfo.setFromId(original.getGimageId());
+            syncInfo.setFromCustomerId(original.getCustomerId());
+            MallGImagesBean target = (MallGImagesBean) original.clone();
+            target.setGimageId(null);
+            target.setCustomerId(targetCustomerId);
+            target = gImagesRepository.saveAndFlush(target);
             syncInfo.setToId(target.getGimageId());
             syncInfo.setToCustomerId(targetCustomerId);
             syncInfo.setType(Constant.GOOD_Img);
             syncInfo = syncInfoService.save(syncInfo);
             syncInfoList.add(syncInfo);
             targetImageList.add(target);
-        });
+        }
         return new SyncResultBean<>(targetImageList, syncInfoList);
     }
 

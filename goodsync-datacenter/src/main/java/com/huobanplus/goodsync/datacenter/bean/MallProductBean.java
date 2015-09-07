@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 @Table(name = "Mall_Products")
 @Data
-public class MallProductBean {
+public class MallProductBean implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_Id")
@@ -64,4 +64,15 @@ public class MallProductBean {
     private String userIntegralInfo;
     @Column(name = "TestUserIntegralInfo")
     private String testUserIntegralInfo;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MallProductBean o = null;
+        try {
+            o = (MallProductBean) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
 }

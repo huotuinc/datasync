@@ -33,5 +33,5 @@ public interface GoodsTypeService {
      * @param targetCustomerId 目标商户id
      * @return 返回结果，包含了导入成功后目标商户的商品类型列表和前后id的关联信息
      */
-    SyncResultBean<MallGoodsTypeBean> batchSave(List<MallGoodsTypeBean> originalBeans, int targetCustomerId);
+    SyncResultBean<MallGoodsTypeBean> batchSave(List<MallGoodsTypeBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException;
 }

@@ -33,7 +33,7 @@ public interface BrandService {
      * @param customerId    目标商户id
      * @return 返回from和to 的关系数据
      */
-    List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId);
+    List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId) throws CloneNotSupportedException;
 
     /**
      * 得到品牌实体

@@ -30,12 +30,15 @@ public class GoodsServiceImpl implements GoodsService {
     private GoodsRepository goodsRepository;
     @Autowired
     private SyncInfoService syncInfoService;
-    @Autowired
-    private BrandService brandService;
 
     @Override
     public MallGoodsBean save(MallGoodsBean goodsBean) {
         return goodsRepository.save(goodsBean);
+    }
+
+    @Override
+    public List<MallGoodsBean> findGoods(int customerId, List<Integer> goodList) {
+        return goodList == null ? goodsRepository.findByCustomerId(customerId) : goodsRepository.findByCustomerIdAndGoodsIdIn(customerId, goodList);
     }
 
     @Override
@@ -44,28 +47,29 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId) {
+    public SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsBean> targetGoodsList = new ArrayList<>();
-        originalGoodsList.forEach(originalGood -> {
+        for (MallGoodsBean originalGood : originalGoodsList) {
             MallSyncInfoBean syncInfo = new MallSyncInfoBean();
             syncInfo.setFromId(originalGood.getGoodsId());
             syncInfo.setFromCustomerId(originalGood.getCustomerId());
-            originalGood.setGoodsId(null);
-            originalGood.setCustomerId(targetCustomerId);
-            originalGood.setPriceLevelDesc(null);
-            originalGood.setRebateQuatoSetting(null);
-            originalGood.setRebateSaleSetting(null);
-            originalGood.setRebateMode(0);
-            originalGood.setIndividuation(0);
-            MallGoodsBean target = goodsRepository.save(originalGood);
+            MallGoodsBean target = (MallGoodsBean) originalGood.clone();
+            target.setGoodsId(null);
+            target.setCustomerId(targetCustomerId);
+            target.setPriceLevelDesc(null);
+            target.setRebateQuatoSetting(null);
+            target.setRebateSaleSetting(null);
+            target.setRebateMode(0);
+            target.setIndividuation(0);
+            target = goodsRepository.saveAndFlush(target);
             syncInfo.setToId(target.getGoodsId());
             syncInfo.setToCustomerId(targetCustomerId);
             syncInfo.setType(Constant.GOOD);
             syncInfo = syncInfoService.save(syncInfo);
             syncInfoList.add(syncInfo);
             targetGoodsList.add(target);
-        });
+        }
         return new SyncResultBean<>(targetGoodsList, syncInfoList);
     }
 

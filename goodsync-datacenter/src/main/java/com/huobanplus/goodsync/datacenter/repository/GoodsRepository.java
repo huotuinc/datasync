@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface GoodsRepository extends JpaRepository<MallGoodsBean, Integer> {
     List<MallGoodsBean> findByCustomerId(int customerId);
+    
+    List<MallGoodsBean> findByCustomerIdAndGoodsIdIn(int customerId, List<Integer> goodList);
 }

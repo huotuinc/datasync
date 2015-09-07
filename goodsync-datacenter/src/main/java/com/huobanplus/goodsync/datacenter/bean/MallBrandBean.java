@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Mall_Brand")
 @Data
-public class MallBrandBean {
+public class MallBrandBean implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Brand_Id")
@@ -36,4 +36,15 @@ public class MallBrandBean {
     private int orderNum;
     @Column(name = "Customer_Id")
     private int customerId;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MallBrandBean o = null;
+        try {
+            o = (MallBrandBean) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
 }

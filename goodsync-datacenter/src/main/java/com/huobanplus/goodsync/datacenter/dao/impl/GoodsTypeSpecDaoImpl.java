@@ -13,12 +13,13 @@ import java.util.List;
 public class GoodsTypeSpecDaoImpl extends BaseDaoImpl implements GoodsTypeSpecDao {
     @Override
     public List<MallGoodsTypeSpecBean> findByCustomerId(int customerId) {
-        String sql = "SELECT * FROM Mall_Goods_Type_Spec WHERE Customer_Id=?0";
+        String sql = "SELECT * FROM Mall_Goods_Type_Spec WHERE GTS_Customer_Id=?0";
         List<MallGoodsTypeSpecBean> list = jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) -> {
             MallGoodsTypeSpecBean goodsTypeSpecBean = new MallGoodsTypeSpecBean();
             goodsTypeSpecBean.setSpecId(rs.getInt("Spec_Id"));
             goodsTypeSpecBean.setTypeId(rs.getInt("Type_Id"));
             goodsTypeSpecBean.setSpecStyle(rs.getString("Spec_Style"));
+            goodsTypeSpecBean.setCustomerId(rs.getInt("GTS_Customer_Id"));
             return goodsTypeSpecBean;
         });
         return list;

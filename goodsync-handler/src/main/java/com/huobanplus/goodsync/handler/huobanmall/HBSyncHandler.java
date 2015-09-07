@@ -2,9 +2,10 @@ package com.huobanplus.goodsync.handler.huobanmall;
 
 import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.service.*;
-import com.huobanplus.goodsync.handler.GoodSyncHandler;
+import com.huobanplus.goodsync.handler.SyncHandler;
 import com.huobanplus.goodsync.handler.bean.AuthorBaseBean;
 import com.huobanplus.goodsync.handler.bean.HBAuthorBean;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +17,8 @@ import java.util.List;
 /**
  * Created by liual on 2015-09-01.
  */
-@Service
-public class HBGoodSyncHandler implements GoodSyncHandler {
+@Service("hbSyncHandler")
+public class HBSyncHandler implements SyncHandler {
     @Autowired
     private AccountService accountService;
 
@@ -56,8 +57,18 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
 
     @Override
     @Transactional
-    public void goodExport(AuthorBaseBean authorBase, int loginCustomerId) throws IOException {
+    public void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList) throws IOException, CloneNotSupportedException {
+        //导入之前删除原来的数据
+        //todo
         HBAuthorBean hbAuthorBean = (HBAuthorBean) authorBase;
+        List<Integer> goods = null;
+        if (!"all".equals(goodList)) {
+            String[] goodsArray = goodList.split(",");
+            for (String goodId : goodsArray) {
+                goods = new ArrayList<>();
+                goods.add(Integer.valueOf(goodId));
+            }
+        }
         //导出brand及保存前后关联id
         List<MallBrandBean> originalBrandList = brandService.findByCustomerId(loginCustomerId);
         List<MallSyncInfoBean> brandSyncInfoList = brandService.batchSave(originalBrandList, hbAuthorBean.getCustomerId());
@@ -73,7 +84,7 @@ public class HBGoodSyncHandler implements GoodSyncHandler {
         SyncResultBean<MallGoodsTypeBean> goodsTypeResult = goodsTypeService.batchSave(originalTypeList, hbAuthorBean.getCustomerId());
 
         //导出商品详细及保存前后关联id
-        List<MallGoodsBean> originalGoodList = goodsService.findByCustomerId(loginCustomerId);
+        List<MallGoodsBean> originalGoodList = goodsService.findGoods(loginCustomerId, goods);
         SyncResultBean<MallGoodsBean> goodsResult = goodsService.batchSave(originalGoodList, hbAuthorBean.getCustomerId());
         //处理相关联数据，先处理catId，brandId和typeId
         goodsService.handleAssociatedInfo(goodsResult.getTargetList(), goodsCatResult.getSyncInfoList(), brandSyncInfoList, goodsTypeResult.getSyncInfoList());

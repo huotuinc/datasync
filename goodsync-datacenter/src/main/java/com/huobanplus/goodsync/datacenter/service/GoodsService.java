@@ -20,7 +20,16 @@ public interface GoodsService {
     MallGoodsBean save(MallGoodsBean goodsBean);
 
     /**
-     * 根据商户id返回相应的商品列表
+     * 得到某商户的商品信息
+     *
+     * @param customerId
+     * @param goodList
+     * @return
+     */
+    List<MallGoodsBean> findGoods(int customerId, List<Integer> goodList);
+
+    /**
+     * 得到某商户的商品信息
      *
      * @param customerId
      * @return
@@ -34,7 +43,7 @@ public interface GoodsService {
      * @param targetCustomerId  目标商户id
      * @return 返回结果，包含了导入成功后目标商户的商品列表和前后id的关联信息
      */
-    SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId);
+    SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId) throws CloneNotSupportedException;
 
     /**
      * 处理商品内部的关联id

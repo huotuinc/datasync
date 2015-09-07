@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Mall_Goods_Cat")
 @Data
-public class MallGoodsCatBean {
+public class MallGoodsCatBean implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Cat_Id")
@@ -49,4 +49,15 @@ public class MallGoodsCatBean {
     private String catPic;
     @Column(name = "Rewrite_Name")
     private String rewriteName;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MallGoodsCatBean o = null;
+        try {
+            o = (MallGoodsCatBean) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
 }

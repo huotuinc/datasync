@@ -21,7 +21,7 @@ public class SyncInfoServiceImpl implements SyncInfoService {
 
     @Override
     public MallSyncInfoBean save(MallSyncInfoBean syncInfoBean) {
-        return syncInfoRepository.save(syncInfoBean);
+        return syncInfoRepository.saveAndFlush(syncInfoBean);
     }
 
     @Override

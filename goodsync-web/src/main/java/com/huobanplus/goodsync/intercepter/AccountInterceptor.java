@@ -11,10 +11,14 @@ import javax.servlet.http.HttpServletResponse;
  * Created by liual on 2015-09-01.
  */
 @Component
-public class AccountIntercepter extends HandlerInterceptorAdapter {
+public class AccountInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        return super.preHandle(request, response, handler);
+        Object customerId = request.getSession().getAttribute("customerId");
+        if (customerId == null) {
+            response.sendRedirect("/login.jsp");
+            return false;
+        }
+        return true;
     }
 }

@@ -14,7 +14,7 @@ public class GoodsSpecIndexDaoImpl extends BaseDaoImpl implements GoodsSpecIndex
 
     @Override
     public List<MallGoodsSpecIndexBean> findByCustomerId(int customerId) {
-        String sql = "SELECT * FROM Mall_Goods_Spec_Index WHERE Customer_Id=?";
+        String sql = "SELECT * FROM Mall_Goods_Spec_Index WHERE GSI_Customer_Id=?";
         List<MallGoodsSpecIndexBean> list = jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) -> {
             MallGoodsSpecIndexBean specIndex = new MallGoodsSpecIndexBean();
             specIndex.setTypeId(rs.getInt("Type_Id"));
@@ -22,7 +22,7 @@ public class GoodsSpecIndexDaoImpl extends BaseDaoImpl implements GoodsSpecIndex
             specIndex.setSpecValueId(rs.getInt("Spec_Value_Id"));
             specIndex.setGoodsId(rs.getInt("Goods_Id"));
             specIndex.setProductId(rs.getInt("Product_Id"));
-            specIndex.setCustomerId(rs.getInt("Customer_Id"));
+            specIndex.setCustomerId(rs.getInt("GSI_Customer_Id"));
             return specIndex;
         });
         return list;

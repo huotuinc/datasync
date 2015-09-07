@@ -7,7 +7,6 @@ import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.repository.GoodsCatRepository;
 import com.huobanplus.goodsync.datacenter.service.GoodsCatService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,22 +36,26 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsCatBean> batchSave(List<MallGoodsCatBean> originalBeans, int targetCustomerId) {
+    public SyncResultBean<MallGoodsCatBean> batchSave(List<MallGoodsCatBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsCatBean> targetGoodsCat = new ArrayList<>();
-        originalBeans.forEach(originalBean -> {
+        for (MallGoodsCatBean original : originalBeans) {
             MallSyncInfoBean syncInfoBean = new MallSyncInfoBean();
-            syncInfoBean.setFromId(originalBean.getCatId());
-            syncInfoBean.setFromCustomerId(originalBean.getCustomerId());
-            originalBean.setCatId(null);
-            originalBean.setCustomerId(targetCustomerId);
-            MallGoodsCatBean targetCat = goodsCatRepository.save(originalBean);
-            targetGoodsCat.add(targetCat);
-            syncInfoBean.setToId(targetCat.getCatId());
+            syncInfoBean.setFromId(original.getCatId());
+            syncInfoBean.setFromCustomerId(original.getCustomerId());
+            MallGoodsCatBean target = (MallGoodsCatBean) original.clone();
+            target.setCatId(null);
+            target.setCustomerId(targetCustomerId);
+            target = goodsCatRepository.saveAndFlush(target);
+            targetGoodsCat.add(target);
+            syncInfoBean.setToId(target.getCatId());
             syncInfoBean.setToCustomerId(targetCustomerId);
             syncInfoBean.setType(Constant.GOOD_CAT);
             syncInfoBean = syncInfoService.save(syncInfoBean);
             syncInfoList.add(syncInfoBean);
+        }
+        originalBeans.forEach(originalBean -> {
+
         });
         return new SyncResultBean<>(targetGoodsCat, syncInfoList);
     }

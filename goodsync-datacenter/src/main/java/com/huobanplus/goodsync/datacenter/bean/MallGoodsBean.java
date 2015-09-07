@@ -11,31 +11,19 @@ import java.util.Date;
 @Entity
 @Table(name = "Mall_Goods")
 @Data
-public class MallGoodsBean {
+public class MallGoodsBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Goods_Id")
     private Integer goodsId;
     @Column(name = "Cat_Id")
     private int catId;
-
-    @Transient
-    private MallGoodsCatBean goodsCat;
-    
-    @Column(name = "typeId")
+    @Column(name = "Type_Id")
     private int typeId;
-
-    @Transient
-    private MallGoodsTypeBean goodsTypeBean;
-
     @Column(name = "Goods_Type")
     private String goodsType;
     @Column(name = "Brand_Id")
     private int brandId;
-
-    @Transient
-    private MallBrandBean brandBean;
-
     @Column(name = "Brand")
     private String brand;
     @Column(name = "Supplier_Id")
@@ -224,4 +212,15 @@ public class MallGoodsBean {
     private int rebateMode;
     @Column(name = "Individuation")
     private int individuation;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MallGoodsBean o = null;
+        try {
+            o = (MallGoodsBean) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
 }

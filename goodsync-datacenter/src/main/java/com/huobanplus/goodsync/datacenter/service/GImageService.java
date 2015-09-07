@@ -34,7 +34,7 @@ public interface GImageService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId);
+    SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId) throws CloneNotSupportedException;
 
     /**
      * 处理相关联字段，及goodsId

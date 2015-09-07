@@ -40,26 +40,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList, int targetCustomerId) {
+    public SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList, int targetCustomerId) throws CloneNotSupportedException {
         List<MallProductBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
-        originalList.forEach(original -> {
+        for (MallProductBean original : originalList) {
             MallSyncInfoBean syncInfo = new MallSyncInfoBean();
             syncInfo.setFromId(original.getProductId());
             syncInfo.setFromCustomerId(original.getCustomerId());
-            original.setProductId(null);
-            original.setCustomerId(targetCustomerId);
-            original.setUserIntegralInfo(null);
-            original.setUserPriceInfo(null);
-            original.setTestUserIntegralInfo(null);
-            MallProductBean target = productRepository.save(original);
+            MallProductBean target = (MallProductBean) original.clone();
+            target.setProductId(null);
+            target.setCustomerId(targetCustomerId);
+            target.setUserIntegralInfo(null);
+            target.setUserPriceInfo(null);
+            target.setTestUserIntegralInfo(null);
+            target = productRepository.saveAndFlush(target);
             syncInfo.setToId(target.getProductId());
             syncInfo.setToCustomerId(targetCustomerId);
             syncInfo.setType(Constant.PRODUCT);
             syncInfo = syncInfoService.save(syncInfo);
             targetList.add(target);
             syncInfoList.add(syncInfo);
-        });
+        }
         return new SyncResultBean<>(targetList, syncInfoList);
     }
 

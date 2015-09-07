@@ -36,23 +36,24 @@ public class SpecValueServiceImpl implements SpecValueService {
     }
 
     @Override
-    public SyncResultBean<MallSpecValuesBean> batchSave(List<MallSpecValuesBean> originalSpecValue, int targetCustomerId) {
+    public SyncResultBean<MallSpecValuesBean> batchSave(List<MallSpecValuesBean> originalSpecValue, int targetCustomerId) throws CloneNotSupportedException {
         List<MallSpecValuesBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
-        originalSpecValue.forEach(specValue -> {
+        for (MallSpecValuesBean original : originalSpecValue) {
             MallSyncInfoBean syncInfo = new MallSyncInfoBean();
-            syncInfo.setFromId(specValue.getSpecValueId());
-            syncInfo.setFromCustomerId(specValue.getCustomerId());
-            specValue.setSpecValueId(null);
-            specValue.setCustomerId(targetCustomerId);
-            MallSpecValuesBean target = specValueRepository.save(specValue);
+            syncInfo.setFromId(original.getSpecValueId());
+            syncInfo.setFromCustomerId(original.getCustomerId());
+            MallSpecValuesBean target = (MallSpecValuesBean) original.clone();
+            target.setSpecValueId(null);
+            target.setCustomerId(targetCustomerId);
+            target = specValueRepository.saveAndFlush(target);
             syncInfo.setToId(target.getSpecValueId());
             syncInfo.setToCustomerId(targetCustomerId);
             syncInfo.setType(Constant.SPEC_VALUE);
             syncInfo = syncInfoService.save(syncInfo);
             syncInfoList.add(syncInfo);
             targetList.add(target);
-        });
+        }
         return new SyncResultBean<>(targetList, syncInfoList);
     }
 

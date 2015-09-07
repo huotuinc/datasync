@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class MallSyncInfoBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private int fromId;
     private String fromDesc;
     private int toId;

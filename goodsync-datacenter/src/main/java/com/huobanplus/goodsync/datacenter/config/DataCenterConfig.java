@@ -19,7 +19,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @ComponentScan(basePackages = "com.huobanplus.goodsync.datacenter")
-@ImportResource({"datasource_test.xml"})
+@ImportResource({"classpath:datasource_test.xml"})
 @EnableJpaRepositories(basePackages = "com.huobanplus.goodsync.datacenter.repository",
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager")
@@ -28,18 +28,8 @@ public class DataCenterConfig {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
-
     @Bean
     public JdbcTemplate getTemplate() {
         return new JdbcTemplate(dataSource);
-    }
-
-    @Bean(name = "transactionManager")
-    public JpaTransactionManager transactionManager() {
-        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
-        return transactionManager();
     }
 }

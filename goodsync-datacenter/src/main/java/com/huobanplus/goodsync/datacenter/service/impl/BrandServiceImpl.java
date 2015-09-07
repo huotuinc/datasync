@@ -28,29 +28,31 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public List<MallBrandBean> findByCustomerId(int customerId) {
-        return findByCustomerId(customerId);
+        return brandRepository.findByCustomerId(customerId);
     }
 
     @Override
-    public List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId) {
+    public List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId) throws CloneNotSupportedException {
         List<MallSyncInfoBean> savedList = new ArrayList<>();
-        originalBrand.forEach(brand -> {
+        for (MallBrandBean brand : originalBrand) {
             MallSyncInfoBean syncInfoBean = new MallSyncInfoBean();
             syncInfoBean.setFromId(brand.getBrandId());
             syncInfoBean.setFromDesc("伙伴商城");
             syncInfoBean.setFromCustomerId(brand.getCustomerId());
             //保存开始
-            brand.setBrandId(null);
-            brand.setCustomerId(customerId);
-            MallBrandBean brandBean = brandRepository.save(brand);
+            MallBrandBean targetBrand = (MallBrandBean) brand.clone();
+            targetBrand.setBrandId(null);
+            targetBrand.setCustomerId(customerId);
+            targetBrand = brandRepository.saveAndFlush(targetBrand);
+
             //记录目标信息
-            syncInfoBean.setToId(brandBean.getBrandId());
+            syncInfoBean.setToId(targetBrand.getBrandId());
             syncInfoBean.setToDesc("伙伴商城");
             syncInfoBean.setToCustomerId(customerId);
             syncInfoBean.setType("brand");
             syncInfoBean = syncInfoService.save(syncInfoBean);
             savedList.add(syncInfoBean);
-        });
+        }
         return savedList;
     }
 

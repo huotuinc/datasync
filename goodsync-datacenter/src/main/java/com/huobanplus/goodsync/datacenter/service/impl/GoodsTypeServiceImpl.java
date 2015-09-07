@@ -37,23 +37,24 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsTypeBean> batchSave(List<MallGoodsTypeBean> originalBeans, int targetCustomerId) {
+    public SyncResultBean<MallGoodsTypeBean> batchSave(List<MallGoodsTypeBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
-        originalBeans.forEach(originalBean -> {
+        for (MallGoodsTypeBean original : originalBeans) {
             MallSyncInfoBean syncInfo = new MallSyncInfoBean();
-            syncInfo.setFromId(originalBean.getTypeId());
-            syncInfo.setFromCustomerId(originalBean.getCustomerId());
-            originalBean.setTypeId(null);
-            originalBean.setCustomerId(targetCustomerId);
-            MallGoodsTypeBean target = goodsTypeRepository.save(originalBean);
+            syncInfo.setFromId(original.getTypeId());
+            syncInfo.setFromCustomerId(original.getCustomerId());
+            MallGoodsTypeBean target = (MallGoodsTypeBean) original.clone();
+            target.setTypeId(null);
+            target.setCustomerId(targetCustomerId);
+            target = goodsTypeRepository.saveAndFlush(target);
             syncInfo.setToId(target.getTypeId());
             syncInfo.setToCustomerId(targetCustomerId);
             syncInfo.setType(Constant.GOOD_TYPE);
             syncInfo = syncInfoService.save(syncInfo);
             syncInfoList.add(syncInfo);
             targetGoodsType.add(target);
-        });
+        }
         return new SyncResultBean<>(targetGoodsType, syncInfoList);
     }
 }
