@@ -11,7 +11,7 @@ import java.util.List;
  * 货品
  * Created by liual on 2015-09-01.
  */
-public interface ProductService {
+public interface ProductService extends BatchDeletable {
     /**
      * 得到某商户的货品列表
      *
@@ -30,11 +30,12 @@ public interface ProductService {
 
     /**
      * 导入货品到目标商户
+     *
      * @param originalList
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList,int targetCustomerId) throws CloneNotSupportedException;
+    SyncResultBean<MallProductBean> batchSave(int targetCustomerId, List<MallProductBean> originalList) throws CloneNotSupportedException;
 
     /**
      * 处理关联字段
@@ -49,4 +50,11 @@ public interface ProductService {
      * @param specValueSyncInfoList
      */
     void handleAssociatedInfo(List<MallProductBean> targetList, List<MallSyncInfoBean> goodSyncInfoList, List<MallSyncInfoBean> specSyncInfoList, List<MallSyncInfoBean> specValueSyncInfoList) throws IOException;
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

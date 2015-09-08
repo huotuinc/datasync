@@ -13,4 +13,6 @@ public interface GoodsTypeSpecDao {
     int add(MallGoodsTypeSpecBean goodsTypeSpec);
 
     int update(MallGoodsTypeSpecBean goodsTypeSpec);
+
+    void deleteByCustomerId(int customerId);
 }

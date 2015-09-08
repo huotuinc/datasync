@@ -2,6 +2,7 @@ package com.huobanplus.goodsync.datacenter.repository;
 
 import com.huobanplus.goodsync.datacenter.bean.MallSpecValuesBean;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -10,4 +11,7 @@ import java.util.List;
  */
 public interface SpecValueRepository extends JpaRepository<MallSpecValuesBean, Integer> {
     List<MallSpecValuesBean> findByCustomerId(int customerId);
+
+    @Query("delete from MallSpecValuesBean where customerId=?1")
+    void deleteByCustomerId(int customerId);
 }

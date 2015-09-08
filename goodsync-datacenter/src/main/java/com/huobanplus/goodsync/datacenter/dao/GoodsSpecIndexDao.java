@@ -11,4 +11,6 @@ public interface GoodsSpecIndexDao {
     List<MallGoodsSpecIndexBean> findByCustomerId(int customerId);
 
     int add(MallGoodsSpecIndexBean specIndex);
+
+    void deleteByCustomerId(int customerId);
 }

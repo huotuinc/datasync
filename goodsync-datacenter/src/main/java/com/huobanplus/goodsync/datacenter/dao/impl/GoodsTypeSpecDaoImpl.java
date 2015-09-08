@@ -13,7 +13,7 @@ import java.util.List;
 public class GoodsTypeSpecDaoImpl extends BaseDaoImpl implements GoodsTypeSpecDao {
     @Override
     public List<MallGoodsTypeSpecBean> findByCustomerId(int customerId) {
-        String sql = "SELECT * FROM Mall_Goods_Type_Spec WHERE GTS_Customer_Id=?0";
+        String sql = "SELECT * FROM Mall_Goods_Type_Spec WHERE GTS_Customer_Id=?";
         List<MallGoodsTypeSpecBean> list = jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) -> {
             MallGoodsTypeSpecBean goodsTypeSpecBean = new MallGoodsTypeSpecBean();
             goodsTypeSpecBean.setSpecId(rs.getInt("Spec_Id"));
@@ -27,7 +27,7 @@ public class GoodsTypeSpecDaoImpl extends BaseDaoImpl implements GoodsTypeSpecDa
 
     @Override
     public int add(MallGoodsTypeSpecBean goodsTypeSpec) {
-        String sql = "INSERT INTO Mall_Goods_Type_Spec(Spec_Id,Type_Id,Spec_Style,Customer_Id) " +
+        String sql = "INSERT INTO Mall_Goods_Type_Spec(Spec_Id,Type_Id,Spec_Style,GTS_Customer_Id) " +
                 "values(?,?,?,?)";
         return jdbcTemplate.update(sql,
                 goodsTypeSpec.getSpecId(),
@@ -38,10 +38,16 @@ public class GoodsTypeSpecDaoImpl extends BaseDaoImpl implements GoodsTypeSpecDa
 
     @Override
     public int update(MallGoodsTypeSpecBean goodsTypeSpec) {
-        String sql = "UPDATE Mall_Goods_Type_Spec SET Spec_Id=?,Type_Id=?,Customer_Id=?";
+        String sql = "UPDATE Mall_Goods_Type_Spec SET Spec_Id=?,Type_Id=?,GTS_Customer_Id=?";
         return jdbcTemplate.update(sql,
                 goodsTypeSpec.getSpecId(),
                 goodsTypeSpec.getTypeId(),
                 goodsTypeSpec.getCustomerId());
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        String sql = "DELETE FROM Mall_Goods_Type_Spec WHERE GTS_Customer_Id=?";
+        jdbcTemplate.update(sql, new Object[]{customerId});
     }
 }

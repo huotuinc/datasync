@@ -43,7 +43,7 @@ public interface GoodsService {
      * @param targetCustomerId  目标商户id
      * @return 返回结果，包含了导入成功后目标商户的商品列表和前后id的关联信息
      */
-    SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId) throws CloneNotSupportedException;
+    SyncResultBean<MallGoodsBean> batchSave(int targetCustomerId,List<MallGoodsBean> originalGoodsList) throws CloneNotSupportedException;
 
     /**
      * 处理商品内部的关联id
@@ -82,4 +82,11 @@ public interface GoodsService {
      * @param specValueSyncInfo
      */
     void handleSpecAndPdtInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> productSyncInfo, List<MallSyncInfoBean> specValueSyncInfo) throws IOException;
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

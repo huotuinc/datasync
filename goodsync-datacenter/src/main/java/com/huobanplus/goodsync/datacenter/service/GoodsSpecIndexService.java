@@ -30,11 +30,18 @@ public interface GoodsSpecIndexService {
      *
      * @return
      */
-    int batchSave(List<MallGoodsSpecIndexBean> originalList,
-                  int targetCustomerId,
+    int batchSave(int targetCustomerId,
+                  List<MallGoodsSpecIndexBean> originalList,
                   List<MallSyncInfoBean> typeSyncInfo,
                   List<MallSyncInfoBean> specSyncInfo,
                   List<MallSyncInfoBean> specValueSyncInfo,
                   List<MallSyncInfoBean> goodSyncInfo,
                   List<MallSyncInfoBean> productSyncInfo);
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

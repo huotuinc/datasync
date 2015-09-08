@@ -36,7 +36,7 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsCatBean> batchSave(List<MallGoodsCatBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallGoodsCatBean> batchSave(int targetCustomerId, List<MallGoodsCatBean> originalBeans) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsCatBean> targetGoodsCat = new ArrayList<>();
         for (MallGoodsCatBean original : originalBeans) {
@@ -66,7 +66,7 @@ public class GoodsCatServiceImpl implements GoodsCatService {
             int targetParentId = syncInfoService.getTargetId(goodsCat.getParentId(), Constant.GOOD_CAT, resultBean.getSyncInfoList());
             goodsCat.setParentId(targetParentId);
             String originalPath = goodsCat.getCatPath();
-            String[] pathArray = originalPath.substring(1, originalPath.length() - 1).split("/|");
+            String[] pathArray = originalPath.substring(1, originalPath.length() - 1).split("\\|");
             //得到targetId并重新拼接path
             StringBuilder targetPath = new StringBuilder("|");
             for (String originalId : pathArray) {
@@ -76,5 +76,10 @@ public class GoodsCatServiceImpl implements GoodsCatService {
             goodsCat.setCatPath(targetPath.toString());
             goodsCatRepository.save(goodsCat);
         });
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        goodsCatRepository.deleteByCustomerId(customerId);
     }
 }

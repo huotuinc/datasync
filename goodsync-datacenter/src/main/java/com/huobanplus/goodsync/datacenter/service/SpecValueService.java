@@ -34,7 +34,7 @@ public interface SpecValueService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallSpecValuesBean> batchSave(List<MallSpecValuesBean> originalSpecValue, int targetCustomerId) throws CloneNotSupportedException;
+    SyncResultBean<MallSpecValuesBean> batchSave(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue) throws CloneNotSupportedException;
 
     /**
      * 处理关联的规格id字段
@@ -43,4 +43,11 @@ public interface SpecValueService {
      * @param specSyncInfoList
      */
     void handleSpecId(List<MallSpecValuesBean> targetList, List<MallSyncInfoBean> specSyncInfoList);
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

@@ -2,6 +2,7 @@ package com.huobanplus.goodsync.datacenter.repository;
 
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsCatBean;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,4 +12,7 @@ import java.util.List;
 public interface GoodsCatRepository extends JpaRepository<MallGoodsCatBean, Integer> {
 
     List<MallGoodsCatBean> findByCustomerId(int customerId);
+
+    @Query("delete from MallGoodsCatBean where customerId=?1")
+    void deleteByCustomerId(int customerId);
 }

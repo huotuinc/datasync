@@ -31,7 +31,7 @@ public class MallSpecValuesBean implements Cloneable {
     private long supplierId;
     @Column(name = "Supplier_Spec_Value_Id")
     private int supplierSpecValueId;
-    @Column(name = "Customer_Id")
+    @Column(name = "SV_Customer_Id")
     private int customerId;
 
     @Override

@@ -47,7 +47,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsBean> batchSave(List<MallGoodsBean> originalGoodsList, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallGoodsBean> batchSave(int targetCustomerId, List<MallGoodsBean> originalGoodsList) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsBean> targetGoodsList = new ArrayList<>();
         for (MallGoodsBean originalGood : originalGoodsList) {
@@ -109,23 +109,39 @@ public class GoodsServiceImpl implements GoodsService {
             });
             target.setSpec(objectMapper.writeValueAsString(targetSpec));
             //处理pdt_desc
-            List<GoodPdtDesc> pdtDescList = objectMapper.readValue(target.getPdtDesc(), List.class);
+            List<Map> pdtDescList = objectMapper.readValue(target.getPdtDesc(), List.class);
+            List<GoodPdtDesc> targetPdtDesc = new ArrayList<>();
             pdtDescList.forEach(pdtDesc -> {
-                int targetProductId = syncInfoService.getTargetId(pdtDesc.getProductId(), Constant.PRODUCT, productSyncInfo);
-                pdtDesc.setProductId(targetProductId);
+                GoodPdtDesc goodPdtDesc = new GoodPdtDesc();
+                int targetProductId = syncInfoService.getTargetId((Integer) pdtDesc.get("ProductId"), Constant.PRODUCT, productSyncInfo);
+                goodPdtDesc.setProductId(targetProductId);
+                goodPdtDesc.setDesc((String) pdtDesc.get("Desc"));
+                targetPdtDesc.add(goodPdtDesc);
             });
-            target.setPdtDesc(objectMapper.writeValueAsString(pdtDescList));
+            target.setPdtDesc(objectMapper.writeValueAsString(targetPdtDesc));
             //处理spec_desc
-            List<GoodSpecDesc> specDescList = objectMapper.readValue(target.getSpecDesc(), List.class);
+            List<Map> specDescList = objectMapper.readValue(target.getSpecDesc(), List.class);
+            List<GoodSpecDesc> targetSpecDesc = new ArrayList<>();
             specDescList.forEach(specDesc -> {
-                int targetSpecId = syncInfoService.getTargetId(specDesc.getSpecId(), Constant.SPEC, specSyncInfo);
-                int targetSpecValueId = syncInfoService.getTargetId(specDesc.getSpecValueId(), Constant.SPEC_VALUE, specValueSyncInfo);
-                specDesc.setSpecId(targetSpecId);
-                specDesc.setSpecValueId(targetSpecValueId);
+                GoodSpecDesc goodSpecDesc = new GoodSpecDesc();
+                int targetSpecId = syncInfoService.getTargetId((Integer) specDesc.get("SpecId"), Constant.SPEC, specSyncInfo);
+                int targetSpecValueId = syncInfoService.getTargetId((Integer) specDesc.get("SpecValueId"), Constant.SPEC_VALUE, specValueSyncInfo);
+                goodSpecDesc.setSpecId(targetSpecId);
+                goodSpecDesc.setSpecValueId(targetSpecValueId);
+                goodSpecDesc.setSpecValue((String) specDesc.get("SpecValue"));
+                goodSpecDesc.setGoodsImageIds((List<String>) specDesc.get("GoodsImageIds"));
+                goodSpecDesc.setShowType((String) specDesc.get("ShowType"));
+                goodSpecDesc.setSpecImage((String) specDesc.get("SpecImage"));
+                targetSpecDesc.add(goodSpecDesc);
             });
-            target.setSpecDesc(objectMapper.writeValueAsString(specDescList));
+            target.setSpecDesc(objectMapper.writeValueAsString(targetSpecDesc));
             goodsRepository.save(target);
         }
 
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        goodsRepository.deleteByCustomerId(customerId);
     }
 }

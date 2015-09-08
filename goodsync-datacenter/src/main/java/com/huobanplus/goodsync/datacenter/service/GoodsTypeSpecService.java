@@ -24,5 +24,12 @@ public interface GoodsTypeSpecService {
      * @param typeSyncInfo
      * @return
      */
-    int batchSave(List<MallGoodsTypeSpecBean> originalList, int targetCustomerId, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo);
+    int batchSave(int targetCustomerId,List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo);
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

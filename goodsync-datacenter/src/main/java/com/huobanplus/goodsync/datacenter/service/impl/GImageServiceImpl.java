@@ -37,7 +37,7 @@ public class GImageServiceImpl implements GImageService {
     }
 
     @Override
-    public SyncResultBean<MallGImagesBean> batchSave(List<MallGImagesBean> originalImages, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallGImagesBean> batchSave(int targetCustomerId,List<MallGImagesBean> originalImages) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGImagesBean> targetImageList = new ArrayList<>();
         for (MallGImagesBean original : originalImages) {
@@ -65,5 +65,10 @@ public class GImageServiceImpl implements GImageService {
             target.setGoodId(targetGoodId);
             gImagesRepository.save(target);
         });
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        gImagesRepository.deleteByCustomerId(customerId);
     }
 }

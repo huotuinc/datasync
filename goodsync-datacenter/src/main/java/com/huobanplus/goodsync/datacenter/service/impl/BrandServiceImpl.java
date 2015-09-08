@@ -2,6 +2,7 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 
 import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.BrandRepository;
 import com.huobanplus.goodsync.datacenter.service.BrandService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -32,7 +33,8 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId) throws CloneNotSupportedException {
+    @PreBatchDel
+    public List<MallSyncInfoBean> batchSave(int customerId, List<MallBrandBean> originalBrand) throws CloneNotSupportedException {
         List<MallSyncInfoBean> savedList = new ArrayList<>();
         for (MallBrandBean brand : originalBrand) {
             MallSyncInfoBean syncInfoBean = new MallSyncInfoBean();
@@ -59,5 +61,10 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public MallBrandBean findByBrandId(int brandId) {
         return brandRepository.findOne(brandId);
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        brandRepository.deleteByCustomerId(customerId);
     }
 }

@@ -60,6 +60,8 @@ public class HBSyncHandler implements SyncHandler {
     public void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList) throws IOException, CloneNotSupportedException {
         //导入之前删除原来的数据
         //todo
+
+
         HBAuthorBean hbAuthorBean = (HBAuthorBean) authorBase;
         List<Integer> goods = null;
         if (!"all".equals(goodList)) {
@@ -136,4 +138,11 @@ public class HBSyncHandler implements SyncHandler {
 
     }
 
+
+    private void batchPreDelete(int customerId) {
+        brandService.deleteByCustomerId(customerId);
+        gImageService.deleteByCustomerId(customerId);
+        goodsCatService.deleteByCustomerId(customerId);
+
+    }
 }

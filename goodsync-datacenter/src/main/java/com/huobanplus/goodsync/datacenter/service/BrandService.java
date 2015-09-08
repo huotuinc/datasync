@@ -9,7 +9,7 @@ import java.util.List;
  * 品牌
  * Created by liual on 2015-09-02.
  */
-public interface BrandService {
+public interface BrandService extends BatchDeletable {
     /**
      * 保存品牌信息
      *
@@ -33,7 +33,7 @@ public interface BrandService {
      * @param customerId    目标商户id
      * @return 返回from和to 的关系数据
      */
-    List<MallSyncInfoBean> batchSave(List<MallBrandBean> originalBrand, int customerId) throws CloneNotSupportedException;
+    List<MallSyncInfoBean> batchSave(int customerId, List<MallBrandBean> originalBrand) throws CloneNotSupportedException;
 
     /**
      * 得到品牌实体
@@ -42,4 +42,11 @@ public interface BrandService {
      * @return
      */
     MallBrandBean findByBrandId(int brandId);
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

@@ -36,7 +36,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     }
 
     @Override
-    public SyncResultBean<MallSpecificationBean> batchSave(List<MallSpecificationBean> originalSpec, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallSpecificationBean> batchSave(int targetCustomerId, List<MallSpecificationBean> originalSpec) throws CloneNotSupportedException {
         List<MallSpecificationBean> targetSpecList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         for (MallSpecificationBean original : originalSpec) {
@@ -55,5 +55,10 @@ public class SpecificationServiceImpl implements SpecificationService {
             targetSpecList.add(target);
         }
         return new SyncResultBean<>(targetSpecList, syncInfoList);
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        specificationRepository.deleteByCustomerId(customerId);
     }
 }

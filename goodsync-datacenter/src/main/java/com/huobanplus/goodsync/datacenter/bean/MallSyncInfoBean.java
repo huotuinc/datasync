@@ -18,6 +18,7 @@ public class MallSyncInfoBean {
     private String fromDesc;
     private int toId;
     private String toDesc;
+    @Column(name = "SYNC_TYPE")
     private String type;
     private int fromCustomerId;
     private int toCustomerId;

@@ -36,7 +36,7 @@ public class SpecValueServiceImpl implements SpecValueService {
     }
 
     @Override
-    public SyncResultBean<MallSpecValuesBean> batchSave(List<MallSpecValuesBean> originalSpecValue, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallSpecValuesBean> batchSave(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue) throws CloneNotSupportedException {
         List<MallSpecValuesBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         for (MallSpecValuesBean original : originalSpecValue) {
@@ -64,5 +64,10 @@ public class SpecValueServiceImpl implements SpecValueService {
             target.setSpecId(targetSpecId);
             specValueRepository.save(target);
         });
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        specValueRepository.deleteByCustomerId(customerId);
     }
 }

@@ -5,8 +5,10 @@ import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.json.ProductProps;
 import com.huobanplus.goodsync.datacenter.repository.ProductRepository;
+import com.huobanplus.goodsync.datacenter.service.BrandService;
 import com.huobanplus.goodsync.datacenter.service.ProductService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liual on 2015-09-01.
@@ -40,7 +41,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public SyncResultBean<MallProductBean> batchSave(List<MallProductBean> originalList, int targetCustomerId) throws CloneNotSupportedException {
+    @PreBatchDel
+    public SyncResultBean<MallProductBean> batchSave(int targetCustomerId, List<MallProductBean> originalList) throws CloneNotSupportedException {
         List<MallProductBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         for (MallProductBean original : originalList) {
@@ -53,6 +55,8 @@ public class ProductServiceImpl implements ProductService {
             target.setUserIntegralInfo(null);
             target.setUserPriceInfo(null);
             target.setTestUserIntegralInfo(null);
+            target.setUpTime(new Date());
+            target.setLastModify(new Date());
             target = productRepository.saveAndFlush(target);
             syncInfo.setToId(target.getProductId());
             syncInfo.setToCustomerId(targetCustomerId);
@@ -71,15 +75,24 @@ public class ProductServiceImpl implements ProductService {
             int targetGoodId = syncInfoService.getTargetId(target.getGoodsId(), Constant.GOOD, goodSyncInfoList);
             target.setGoodsId(targetGoodId);
             String originalProps = target.getProps();
-            List<ProductProps> propsList = objectMapper.readValue(originalProps, List.class);
+            List<Map> propsList = objectMapper.readValue(originalProps, List.class);
+            List<ProductProps> targetProps = new ArrayList<>();
             propsList.forEach(prop -> {
-                int targetSpecId = syncInfoService.getTargetId(prop.getSpecId(), Constant.SPEC, specSyncInfoList);
-                int targetSpecValueId = syncInfoService.getTargetId(prop.getSpecValueId(), Constant.SPEC_VALUE, specValueSyncInfoList);
-                prop.setSpecId(targetSpecId);
-                prop.setSpecValueId(targetSpecValueId);
+                ProductProps productProps = new ProductProps();
+                int targetSpecId = syncInfoService.getTargetId((Integer) prop.get("SpecId"), Constant.SPEC, specSyncInfoList);
+                int targetSpecValueId = syncInfoService.getTargetId((Integer) prop.get("SpecValueId"), Constant.SPEC_VALUE, specValueSyncInfoList);
+                productProps.setSpecId(targetSpecId);
+                productProps.setSpecValueId(targetSpecValueId);
+                productProps.setSpecValue((String) prop.get("SpecValue"));
+                targetProps.add(productProps);
             });
-            target.setProps(objectMapper.writeValueAsString(propsList));
+            target.setProps(objectMapper.writeValueAsString(targetProps));
             productRepository.save(target);
         }
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        productRepository.deleteByCustomerId(customerId);
     }
 }

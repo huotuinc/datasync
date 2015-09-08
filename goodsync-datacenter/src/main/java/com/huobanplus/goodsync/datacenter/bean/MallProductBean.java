@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 @Table(name = "Mall_Products")
 @Data
-public class MallProductBean implements Cloneable{
+public class MallProductBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_Id")
@@ -47,7 +47,7 @@ public class MallProductBean implements Cloneable{
     @Column(name = "Props")
     private String props;
     @Column(name = "Uptime")
-    private long upTime;
+    private Date upTime;
     @Column(name = "Last_Modify")
     private Date lastModify;
     @Column(name = "Disabled")

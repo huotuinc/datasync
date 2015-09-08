@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Configuration
 @EnableWebMvc
-@Import({ApplicationConfig.class})
+@Import({ApplicationConfig.class, WebSocketConfig.class})
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -42,7 +42,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON));
         converters.add(converter);
     }
-
 
 
     @Autowired

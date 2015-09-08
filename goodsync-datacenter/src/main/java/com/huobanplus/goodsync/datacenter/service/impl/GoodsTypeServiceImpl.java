@@ -37,7 +37,7 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
-    public SyncResultBean<MallGoodsTypeBean> batchSave(List<MallGoodsTypeBean> originalBeans, int targetCustomerId) throws CloneNotSupportedException {
+    public SyncResultBean<MallGoodsTypeBean> batchSave(int targetCustomerId, List<MallGoodsTypeBean> originalBeans) throws CloneNotSupportedException {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         for (MallGoodsTypeBean original : originalBeans) {
@@ -56,5 +56,10 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
             targetGoodsType.add(target);
         }
         return new SyncResultBean<>(targetGoodsType, syncInfoList);
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        goodsTypeRepository.deleteByCustomerId(customerId);
     }
 }

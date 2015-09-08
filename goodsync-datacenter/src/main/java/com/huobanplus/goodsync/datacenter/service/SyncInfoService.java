@@ -37,4 +37,11 @@ public interface SyncInfoService {
      * @return
      */
     int getTargetId(int fromId, String type, List<MallSyncInfoBean> syncInfoList);
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

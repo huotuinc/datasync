@@ -33,5 +33,12 @@ public interface SpecificationService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallSpecificationBean> batchSave(List<MallSpecificationBean> originalSpec, int targetCustomerId) throws CloneNotSupportedException;
+    SyncResultBean<MallSpecificationBean> batchSave(int targetCustomerId,List<MallSpecificationBean> originalSpec) throws CloneNotSupportedException;
+
+    /**
+     * 删除某商户的信息
+     *
+     * @param customerId
+     */
+    void deleteByCustomerId(int customerId);
 }

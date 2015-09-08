@@ -34,7 +34,7 @@ public class GoodsSpecIndexServiceImpl implements GoodsSpecIndexService {
     }
 
     @Override
-    public int batchSave(List<MallGoodsSpecIndexBean> originalList, int targetCustomerId, List<MallSyncInfoBean> typeSyncInfo, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> specValueSyncInfo, List<MallSyncInfoBean> goodSyncInfo, List<MallSyncInfoBean> productSyncInfo) {
+    public int batchSave(int targetCustomerId, List<MallGoodsSpecIndexBean> originalList, List<MallSyncInfoBean> typeSyncInfo, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> specValueSyncInfo, List<MallSyncInfoBean> goodSyncInfo, List<MallSyncInfoBean> productSyncInfo) {
         int index = 0;
         for (MallGoodsSpecIndexBean specIndex : originalList) {
             int targetTypeId = syncInfoService.getTargetId(specIndex.getTypeId(), Constant.GOOD_TYPE, typeSyncInfo);
@@ -52,5 +52,10 @@ public class GoodsSpecIndexServiceImpl implements GoodsSpecIndexService {
             index++;
         }
         return index;
+    }
+
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        goodsSpecIndexDao.deleteByCustomerId(customerId);
     }
 }

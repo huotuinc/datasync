@@ -58,4 +58,9 @@ public class SyncInfoServiceImpl implements SyncInfoService {
         return 0;
     }
 
+    @Override
+    public void deleteByCustomerId(int customerId) {
+        syncInfoRepository.deleteByCustomerId(customerId);
+    }
+
 }

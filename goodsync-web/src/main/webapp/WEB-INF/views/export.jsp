@@ -22,10 +22,12 @@
     <script type="text/javascript" src="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.8.20.min.js" />"></script>
     <link rel="stylesheet" type="text/css"
           href="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.10.3.custom.min.css"/>">
-
+    <script type="text/javascript" src="<c:url value="/resources/scripts/sockjs-0.3.4.min.js" />"></script>
+    <script type="text/javascript" src="<c:url value="/resources/scripts/stomp.js" />"></script>
     <title>商品列表</title>
     <script type="text/javascript">
         var type = 0;
+        var stompClient;
         var huobanAjax = "<c:url value="/huobanmall/" />"
         $(function () {
             $("#checkAll").change(function () {
@@ -36,11 +38,36 @@
                     $chkGoodId.removeAttr("checked");
                 }
             });
+
+            connect();
         });
+
+        function connect() {
+            var socket = new SockJS("/syncMessage");
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (data) {
+                console.log(data);
+                stompClient.subscribe("/syncMessageClient", function (msg) {
+                    alert(JSON.parse(msg.body));
+                })
+            }, function () {
+                connect();
+            });
+        }
+
+        function sendMsg() {
+            stompClient.send("/sync/message", {}, JSON.stringify({
+                "name": encodeURIComponent("sdfsdf")
+            }));
+        }
 
         var exportHandler = {
             export: function () {
-                J.ShowDialogButton("export_dialog", "选择导出平台", {});
+                J.ShowDialogButton("export_dialog", "选择导出平台", {
+                    "ok": function () {
+                        sendMsg();
+                    }
+                });
             },
             exprotToHuoban: function () {
                 J.ShowDialog("export_huoban", "伙伴商城授权登录", function () {
