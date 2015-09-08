@@ -12,4 +12,5 @@ public class Constant {
     public static final String SPEC = "spec";
     public static final String SPEC_VALUE = "specValue";
     public static final String PRODUCT = "product";
+    
 }
