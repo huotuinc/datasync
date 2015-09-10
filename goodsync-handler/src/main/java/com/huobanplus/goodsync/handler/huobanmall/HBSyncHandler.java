@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class HBSyncHandler implements SyncHandler {
     private SyncInfoService syncInfoService;
     @Autowired
     private ExportService exportService;
+    @Autowired
+    private HttpSession session;
 
     @Override
     public AuthorBaseBean authorization(AuthorBaseBean authorBase) {

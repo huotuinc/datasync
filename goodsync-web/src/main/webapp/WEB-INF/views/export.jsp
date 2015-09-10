@@ -23,11 +23,9 @@
     <link rel="stylesheet" type="text/css"
           href="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.10.3.custom.min.css"/>">
     <script type="text/javascript" src="<c:url value="/resources/scripts/sockjs-0.3.4.min.js" />"></script>
-    <script type="text/javascript" src="<c:url value="/resources/scripts/stomp.js" />"></script>
     <title>商品列表</title>
     <script type="text/javascript">
         var type = 0;
-        var stompClient;
         var huobanAjax = "<c:url value="/huobanmall/" />"
         $(function () {
             $("#checkAll").change(function () {
@@ -38,38 +36,24 @@
                     $chkGoodId.removeAttr("checked");
                 }
             });
-
-            connect();
         });
-
-        function connect() {
-            var socket = new SockJS("/syncMessage");
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (data) {
-                console.log(data);
-                stompClient.subscribe("/syncMessageClient", function (msg) {
-                    alert(JSON.parse(msg.body));
-                })
-            }, function () {
-                connect();
-            });
-        }
-
-        function sendMsg() {
-            stompClient.send("/sync/message", {}, JSON.stringify({
-                "name": encodeURIComponent("sdfsdf")
-            }));
-        }
 
         var exportHandler = {
             export: function () {
                 J.ShowDialogButton("export_dialog", "选择导出平台", {
                     "ok": function () {
-                        sendMsg();
+                        var ws = new SockJS("http://" + window.location.host + "/sync/message");
+                        ws.onopen = function () {
+                            console.log("Info: connection opened");
+                        }
+                        ws.onmessage = function (event) {
+                            console.log("message:" + event.data);
+                        }
+                        ws.send("sdfsdf");
                     }
                 });
             },
-            exprotToHuoban: function () {
+            exportToHuoban: function () {
                 J.ShowDialog("export_huoban", "伙伴商城授权登录", function () {
                     var account = $.trim($("#account").val());
                     var password = $.trim($("#password").val());
@@ -80,6 +64,11 @@
                     J.GetJsonRespons(huobanAjax + "authority", requestData, function (json) {
                         if (json == 1) {
                             $.jBox.tip("授权成功");
+                            jBox.confirm('确定要信息同步到指定商户？', '提示', function (v, h, f) {
+                                if (v == "ok") {
+                                }
+                                return true;
+                            });
                         } else {
                             $.jBox.tip("授权失败");
                         }
@@ -95,7 +84,7 @@
 <body style="background-color:#e4e7ea">
 <div id="export_dialog" style="padding:20px;display: none;">
     <div class="fg-button clearfix">
-        <a href="javascript:exportHandler.exprotToHuoban();">导出到伙伴商城</a>
+        <a href="javascript:exportHandler.exportToHuoban();">导出到伙伴商城</a>
     </div>
 
     <div class="fg-button clearfix" style="margin-top: 57px;">

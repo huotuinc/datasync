@@ -19,5 +19,5 @@ public interface GoodsRepository extends JpaRepository<MallGoodsBean, Integer> {
     @Modifying
     @Query("delete from MallGoodsBean where customerId=?1")
     void deleteByCustomerId(int customerId);
-    
+
 }

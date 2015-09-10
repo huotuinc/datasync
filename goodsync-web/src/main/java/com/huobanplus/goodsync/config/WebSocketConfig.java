@@ -1,43 +1,26 @@
 package com.huobanplus.goodsync.config;
 
-import com.huobanplus.goodsync.websockethandler.GoodExportWebSocketHandler;
+import com.huobanplus.goodsync.datacenter.common.MessageHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
-import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
-import org.springframework.messaging.simp.config.ChannelRegistration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.config.annotation.*;
-import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
-
-import java.util.List;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
- * Created by liual on 2015-09-07.
+ * Created by liual on 2015-09-10.
  */
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-        stompEndpointRegistry.addEndpoint("/syncMessage").withSockJS();
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
+        webSocketHandlerRegistry.addHandler(messageHandler(), "/sync/message").withSockJS();
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration channelRegistration) {
-
-    }
-
-    @Override
-    public void configureClientOutboundChannel(ChannelRegistration channelRegistration) {
-
-    }
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
-        messageBrokerRegistry.enableSimpleBroker("/message");
-        messageBrokerRegistry.setApplicationDestinationPrefixes("/sync");
+    @Bean
+    public WebSocketHandler messageHandler() {
+        return new MessageHandler();
     }
 }

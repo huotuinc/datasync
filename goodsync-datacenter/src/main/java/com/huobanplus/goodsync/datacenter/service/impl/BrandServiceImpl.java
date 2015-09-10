@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.BrandRepository;
 import com.huobanplus.goodsync.datacenter.service.BrandService;
@@ -37,6 +38,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Message(type = "同步", info = "商品品牌")
     public List<MallSyncInfoBean> batchSave(int customerId, List<MallBrandBean> originalBrand) throws CloneNotSupportedException {
         List<MallSyncInfoBean> savedList = new ArrayList<>();
         for (MallBrandBean brand : originalBrand) {
