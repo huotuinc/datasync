@@ -4,6 +4,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallGoodsCatBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -37,11 +38,19 @@ public interface GoodsCatService {
     SyncResultBean<MallGoodsCatBean> batchSave(int targetCustomerId, List<MallGoodsCatBean> originalBeans) throws CloneNotSupportedException;
 
     /**
-     * 处理商品分类内部相关联的id
+     * 批量更新，第二次导入的时候
      *
-     * @param resultBean
+     * @param targetCustomerId
+     * @param originalCats
+     * @param syncInfoList
+     * @return 新增的信息
      */
-    void handleAssociatedInfo(SyncResultBean<MallGoodsCatBean> resultBean);
+    List<MallGoodsCatBean> batchUpdate(int targetCustomerId, List<MallGoodsCatBean> originalCats, List<MallSyncInfoBean> syncInfoList) throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException;
+
+    /**
+     * 处理商品分类内部相关联的id
+     */
+    void handleAssociatedInfo(List<MallGoodsCatBean> targetCats, List<MallSyncInfoBean> syncInfoList);
 
     /**
      * 删除某商户的信息

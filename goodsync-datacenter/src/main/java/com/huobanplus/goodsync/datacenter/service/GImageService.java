@@ -4,6 +4,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallGImagesBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -34,7 +35,10 @@ public interface GImageService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallGImagesBean> batchSave(int targetCustomerId,List<MallGImagesBean> originalImages) throws CloneNotSupportedException;
+    SyncResultBean<MallGImagesBean> batchSave(int targetCustomerId, List<MallGImagesBean> originalImages) throws CloneNotSupportedException;
+
+    List<MallGImagesBean> batchUpdate(List<MallGImagesBean> originalImages, List<MallSyncInfoBean> syncInfoList, int targetCustomerId)
+            throws IllegalAccessException, InstantiationException, InvocationTargetException, CloneNotSupportedException;
 
     /**
      * 处理相关联字段，及goodsId

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.huobanplus.goodsync.datacenter.bean.*;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -18,6 +19,14 @@ public interface GoodsService {
      * @return
      */
     MallGoodsBean save(MallGoodsBean goodsBean);
+
+    /**
+     * 得到商品实体
+     *
+     * @param goodsId
+     * @return
+     */
+    MallGoodsBean findByGoodsId(int goodsId);
 
     /**
      * 得到某商户的商品信息
@@ -43,7 +52,15 @@ public interface GoodsService {
      * @param targetCustomerId  目标商户id
      * @return 返回结果，包含了导入成功后目标商户的商品列表和前后id的关联信息
      */
-    SyncResultBean<MallGoodsBean> batchSave(int targetCustomerId,List<MallGoodsBean> originalGoodsList) throws CloneNotSupportedException;
+    SyncResultBean<MallGoodsBean> batchSave(int targetCustomerId, List<MallGoodsBean> originalGoodsList) throws CloneNotSupportedException;
+
+    /**
+     * 批量更新
+     *
+     * @param originalGoods
+     * @param syncInfoList
+     */
+    List<MallGoodsBean> batchUpdate(List<MallGoodsBean> originalGoods, List<MallSyncInfoBean> syncInfoList, int targetCustomerId) throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException;
 
     /**
      * 处理商品内部的关联id
@@ -82,6 +99,17 @@ public interface GoodsService {
      * @param specValueSyncInfo
      */
     void handleSpecAndPdtInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> productSyncInfo, List<MallSyncInfoBean> specValueSyncInfo) throws IOException;
+
+
+    /**
+     * 处理所有关联字段
+     * <p>及上述三个处理方法的综合</p>
+     * <p>在批量更新时使用</p>
+     *
+     * @param targetList
+     * @param syncInfoList
+     */
+    void handleAssociatedAllInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> syncInfoList) throws IOException;
 
     /**
      * 删除某商户的信息

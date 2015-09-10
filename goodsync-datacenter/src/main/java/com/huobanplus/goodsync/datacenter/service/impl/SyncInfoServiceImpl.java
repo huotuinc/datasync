@@ -63,4 +63,14 @@ public class SyncInfoServiceImpl implements SyncInfoService {
         syncInfoRepository.deleteByCustomerId(customerId);
     }
 
+    @Override
+    public int countByToCustomerId(int customerId) {
+        return syncInfoRepository.countByToCustomerId(customerId);
+    }
+
+    @Override
+    public List<MallSyncInfoBean> findByToCustomerId(int toCustomerId) {
+        return syncInfoRepository.findByToCustomerId(toCustomerId);
+    }
+
 }

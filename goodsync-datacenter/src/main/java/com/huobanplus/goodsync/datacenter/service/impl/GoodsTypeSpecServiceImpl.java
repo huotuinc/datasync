@@ -3,6 +3,7 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsTypeSpecBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.dao.GoodsTypeSpecDao;
 import com.huobanplus.goodsync.datacenter.service.GoodsTypeSpecService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -39,11 +40,28 @@ public class GoodsTypeSpecServiceImpl implements GoodsTypeSpecService {
     }
 
     @Override
+    @PreBatchDel
     public int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo) {
         int index = 0;
         for (MallGoodsTypeSpecBean original : originalList) {
             int targetSpecId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC, specSyncInfo);
             int targetTypeId = syncInfoService.getTargetId(original.getTypeId(), Constant.GOOD_TYPE, typeSyncInfo);
+            original.setSpecId(targetSpecId);
+            original.setTypeId(targetTypeId);
+            original.setCustomerId(targetCustomerId);
+            goodsTypeSpecDao.add(original);
+            index++;
+        }
+        return index;
+    }
+
+    @Override
+    @PreBatchDel
+    public int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> syncInfoList) {
+        int index = 0;
+        for (MallGoodsTypeSpecBean original : originalList) {
+            int targetSpecId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC, syncInfoList);
+            int targetTypeId = syncInfoService.getTargetId(original.getTypeId(), Constant.GOOD_TYPE, syncInfoList);
             original.setSpecId(targetSpecId);
             original.setTypeId(targetTypeId);
             original.setCustomerId(targetCustomerId);

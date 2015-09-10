@@ -1,8 +1,10 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.huobanplus.goodsync.datacenter.bean.MallSpecificationBean;
+import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -33,7 +35,17 @@ public interface SpecificationService {
      * @param targetCustomerId
      * @return
      */
-    SyncResultBean<MallSpecificationBean> batchSave(int targetCustomerId,List<MallSpecificationBean> originalSpec) throws CloneNotSupportedException;
+    SyncResultBean<MallSpecificationBean> batchSave(int targetCustomerId, List<MallSpecificationBean> originalSpec) throws CloneNotSupportedException;
+
+    /**
+     * 批量更新
+     *
+     * @param targetCustomerId
+     * @param originalSpec
+     * @param syncInfoList
+     * @return
+     */
+    List<MallSpecificationBean> batchUpdate(int targetCustomerId, List<MallSpecificationBean> originalSpec, List<MallSyncInfoBean> syncInfoList) throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException;
 
     /**
      * 删除某商户的信息

@@ -13,14 +13,8 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class AspectArchitecture {
-
-    @Before("execution(* batchSave(..))")
-    public void batchDelete() {
-        System.out.println("--------------------sdfsdfsdf-----------------");
-    }
-
     @Before("@annotation(preBatchDel) && args(targetCustomerId,..) && target(bean)")
     public void batchDeleteTest(PreBatchDel preBatchDel, int targetCustomerId, BatchDeletable bean) {
-        System.out.println("in");
+        bean.deleteByCustomerId(targetCustomerId);
     }
 }

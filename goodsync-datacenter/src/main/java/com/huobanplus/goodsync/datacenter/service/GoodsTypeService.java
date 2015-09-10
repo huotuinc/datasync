@@ -1,8 +1,10 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsTypeBean;
+import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -33,7 +35,17 @@ public interface GoodsTypeService {
      * @param targetCustomerId 目标商户id
      * @return 返回结果，包含了导入成功后目标商户的商品类型列表和前后id的关联信息
      */
-    SyncResultBean<MallGoodsTypeBean> batchSave(int targetCustomerId,List<MallGoodsTypeBean> originalBeans) throws CloneNotSupportedException;
+    SyncResultBean<MallGoodsTypeBean> batchSave(int targetCustomerId, List<MallGoodsTypeBean> originalBeans) throws CloneNotSupportedException;
+
+    /**
+     * 批量更新
+     *
+     * @param targetCustomerId
+     * @param originalType
+     * @param syncInfoList
+     * @return
+     */
+    List<MallGoodsTypeBean> batchUpdate(int targetCustomerId, List<MallGoodsTypeBean> originalType, List<MallSyncInfoBean> syncInfoList) throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException;
 
     /**
      * 删除某商户的信息

@@ -3,7 +3,9 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallGImagesBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.GImagesRepository;
 import com.huobanplus.goodsync.datacenter.service.GImageService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +40,7 @@ public class GImageServiceImpl implements GImageService {
     }
 
     @Override
-    public SyncResultBean<MallGImagesBean> batchSave(int targetCustomerId,List<MallGImagesBean> originalImages) throws CloneNotSupportedException {
+    public SyncResultBean<MallGImagesBean> batchSave(int targetCustomerId, List<MallGImagesBean> originalImages) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGImagesBean> targetImageList = new ArrayList<>();
         for (MallGImagesBean original : originalImages) {
@@ -56,6 +59,38 @@ public class GImageServiceImpl implements GImageService {
             targetImageList.add(target);
         }
         return new SyncResultBean<>(targetImageList, syncInfoList);
+    }
+
+    @Override
+    public List<MallGImagesBean> batchUpdate(List<MallGImagesBean> originalImages, List<MallSyncInfoBean> syncInfoList, int targetCustomerId)
+            throws IllegalAccessException, InstantiationException, InvocationTargetException, CloneNotSupportedException {
+        List<MallGImagesBean> targetImgList = new ArrayList<>();
+        for (MallGImagesBean original : originalImages) {
+            int targetId = syncInfoService.getTargetId(original.getGimageId(), Constant.GOOD_Img, syncInfoList);
+            if (targetId > 0) {
+                MallGImagesBean targetImg = gImagesRepository.findOne(targetId);
+                ClassHandler.ClassCopy(original, targetImg);
+                targetImg.setCustomerId(targetCustomerId);
+                targetImgList.add(targetImg);
+                gImagesRepository.save(targetImg);
+            } else {
+                //新增
+                MallSyncInfoBean syncInfo = new MallSyncInfoBean();
+                syncInfo.setFromId(original.getGimageId());
+                syncInfo.setFromCustomerId(original.getCustomerId());
+                MallGImagesBean targetImage = (MallGImagesBean) original.clone();
+                targetImage.setGimageId(null);
+                targetImage.setCustomerId(targetCustomerId);
+                targetImage = gImagesRepository.saveAndFlush(targetImage);
+                syncInfo.setToId(targetImage.getGimageId());
+                syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo.setType(Constant.GOOD_Img);
+                syncInfo = syncInfoService.save(syncInfo);
+                targetImgList.add(targetImage);
+                syncInfoList.add(syncInfo);
+            }
+        }
+        return targetImgList;
     }
 
     @Override

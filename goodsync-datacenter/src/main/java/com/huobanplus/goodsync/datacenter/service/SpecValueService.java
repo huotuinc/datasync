@@ -4,6 +4,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSpecValuesBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -35,6 +36,16 @@ public interface SpecValueService {
      * @return
      */
     SyncResultBean<MallSpecValuesBean> batchSave(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue) throws CloneNotSupportedException;
+
+    /**
+     * 批量更新
+     *
+     * @param targetCustomerId
+     * @param originalSpecValue
+     * @param syncInfoList
+     * @return
+     */
+    List<MallSpecValuesBean> batchUpdate(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue, List<MallSyncInfoBean> syncInfoList) throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException;
 
     /**
      * 处理关联的规格id字段

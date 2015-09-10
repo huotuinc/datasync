@@ -2,6 +2,9 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 
 import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
+import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.common.ClassHandler;
+import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.BrandRepository;
 import com.huobanplus.goodsync.datacenter.service.BrandService;
@@ -9,6 +12,7 @@ import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +37,6 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @PreBatchDel
     public List<MallSyncInfoBean> batchSave(int customerId, List<MallBrandBean> originalBrand) throws CloneNotSupportedException {
         List<MallSyncInfoBean> savedList = new ArrayList<>();
         for (MallBrandBean brand : originalBrand) {
@@ -56,6 +59,38 @@ public class BrandServiceImpl implements BrandService {
             savedList.add(syncInfoBean);
         }
         return savedList;
+    }
+
+    @Override
+    public List<MallBrandBean> batchUpdate(List<MallBrandBean> originalBrand, List<MallSyncInfoBean> syncInfoList, int targetCustomerId)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
+        List<MallBrandBean> targetBrandList = new ArrayList<>();
+        for (MallBrandBean original : originalBrand) {
+            int targetId = syncInfoService.getTargetId(original.getBrandId(), Constant.BRAND, syncInfoList);
+            if (targetId > 0) {
+                //存在则更新
+                MallBrandBean targetBrand = brandRepository.findOne(targetId);
+                ClassHandler.ClassCopy(original, targetBrand);
+                targetBrand.setCustomerId(targetCustomerId);
+                targetBrandList.add(targetBrand);
+                brandRepository.save(targetBrand);
+            } else {
+                //不存在则新增
+                MallSyncInfoBean syncInfo = new MallSyncInfoBean();
+                syncInfo.setFromId(original.getBrandId());
+                syncInfo.setFromCustomerId(original.getCustomerId());
+                MallBrandBean targetBrand = (MallBrandBean) original.clone();
+                targetBrand.setBrandId(null);
+                targetBrand = brandRepository.saveAndFlush(targetBrand);
+                syncInfo.setToId(targetBrand.getBrandId());
+                syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo.setType(Constant.BRAND);
+                syncInfo = syncInfoService.save(syncInfo);
+                syncInfoList.add(syncInfo);
+                targetBrandList.add(targetBrand);
+            }
+        }
+        return targetBrandList;
     }
 
     @Override

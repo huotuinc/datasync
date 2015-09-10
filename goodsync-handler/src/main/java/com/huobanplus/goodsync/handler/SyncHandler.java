@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.handler.bean.ExportResult;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 商品相关数据导入导出处理
@@ -36,7 +37,7 @@ public interface SyncHandler {
      * @param goodList        待导出的商品列表，逗号分隔，all表示全部
      * @throws IOException
      */
-    void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList) throws IOException,DatabaseException, CloneNotSupportedException;
+    void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList) throws IOException, DatabaseException, CloneNotSupportedException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
     /**
      * 商品数据导入

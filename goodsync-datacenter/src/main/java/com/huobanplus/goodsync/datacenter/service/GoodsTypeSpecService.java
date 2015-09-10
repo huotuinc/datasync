@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by liual on 2015-09-05.
  */
-public interface GoodsTypeSpecService {
+public interface GoodsTypeSpecService extends BatchDeletable {
     List<MallGoodsTypeSpecBean> findByCustomerId(int customerId);
 
     int add(MallGoodsTypeSpecBean goodsTypeSpec);
@@ -24,7 +24,17 @@ public interface GoodsTypeSpecService {
      * @param typeSyncInfo
      * @return
      */
-    int batchSave(int targetCustomerId,List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo);
+    int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo);
+
+    /**
+     * 导入信息到商户
+     *
+     * @param targetCustomerId
+     * @param originalList
+     * @param syncInfoList
+     * @return
+     */
+    int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> syncInfoList);
 
     /**
      * 删除某商户的信息

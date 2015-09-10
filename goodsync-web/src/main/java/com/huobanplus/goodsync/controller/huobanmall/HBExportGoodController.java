@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by liual on 2015-09-06.
@@ -55,7 +56,8 @@ public class HBExportGoodController implements ExportGoodController {
     @Override
     @RequestMapping(value = "/export", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult export(String goodList, HttpServletRequest request) throws IOException, CloneNotSupportedException {
+    public ApiResult export(String goodList, HttpServletRequest request)
+            throws IOException, CloneNotSupportedException, IllegalAccessException, InstantiationException, InvocationTargetException {
         HBAuthorBean authorResult = (HBAuthorBean) request.getSession().getAttribute("authorResult");
         if (authorResult == null) {
             return ApiResult.resultWith(ResultCodeEnum.AUTHORITY_FAILED.getResultCode(), "授权失败");

@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 @Table(name = "Mall_Gimages")
 @Data
-public class MallGImagesBean implements Cloneable{
+public class MallGImagesBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Gimage_Id")
@@ -44,6 +44,7 @@ public class MallGImagesBean implements Cloneable{
     private Date syncTime;
     @Column(name = "Customer_Id")
     private int customerId;
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         MallGImagesBean o = null;

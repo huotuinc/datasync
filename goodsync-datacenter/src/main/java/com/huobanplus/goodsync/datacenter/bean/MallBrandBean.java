@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Mall_Brand")
 @Data
-public class MallBrandBean implements Cloneable{
+public class MallBrandBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Brand_Id")

@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {ApplicationConfig.class, WebConfig.class})
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
+//@Transactional
 public class HBExportGoodControllerTest extends SpringMvcTest {
     @Autowired
     private SyncHandlerBuilder syncHandlerBuilder;
@@ -64,7 +64,6 @@ public class HBExportGoodControllerTest extends SpringMvcTest {
     }
 
     @Test
-    @Rollback
     public void testExport() throws Exception {
         List<MallGoodsBean> goodsList = goodsService.findByCustomerId(5);
         String goodsStr = goodsList.get(0).getGoodsId() + "," + goodsList.get(1).getGoodsId();
@@ -73,5 +72,11 @@ public class HBExportGoodControllerTest extends SpringMvcTest {
                 .session(mockHttpSession))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+//        mockMvc.perform(post("/huobanmall/export")
+//                .param("goodList", goodsStr)
+//                .session(mockHttpSession))
+//                .andDo(print())
+//                .andExpect(status().isOk());
     }
 }

@@ -40,6 +40,6 @@ public class ProductServiceTest {
 //        productService.batchSave(5, null);
 //        brandService.batchSave(5, null);
 
-        productService.deleteByCustomerId(5);
+        productService.deleteByCustomerId(20000);
     }
 }

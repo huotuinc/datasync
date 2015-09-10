@@ -3,7 +3,9 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsTypeBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.GoodsTypeRepository;
 import com.huobanplus.goodsync.datacenter.service.GoodsTypeService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
+    @PreBatchDel
     public SyncResultBean<MallGoodsTypeBean> batchSave(int targetCustomerId, List<MallGoodsTypeBean> originalBeans) throws CloneNotSupportedException {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
@@ -56,6 +60,36 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
             targetGoodsType.add(target);
         }
         return new SyncResultBean<>(targetGoodsType, syncInfoList);
+    }
+
+    @Override
+    public List<MallGoodsTypeBean> batchUpdate(int targetCustomerId, List<MallGoodsTypeBean> originalType, List<MallSyncInfoBean> syncInfoList)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
+        List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
+        for (MallGoodsTypeBean original : originalType) {
+            int targetId = syncInfoService.getTargetId(original.getTypeId(), Constant.GOOD_TYPE, syncInfoList);
+            if (targetId > 0) {
+                MallGoodsTypeBean targetType = goodsTypeRepository.findOne(targetId);
+                ClassHandler.ClassCopy(original, targetType);
+                targetType.setCustomerId(targetCustomerId);
+                targetGoodsType.add(targetType);
+                goodsTypeRepository.saveAndFlush(targetType);
+            } else {
+                MallSyncInfoBean syncInfo = new MallSyncInfoBean();
+                syncInfo.setFromId(original.getTypeId());
+                syncInfo.setFromCustomerId(original.getCustomerId());
+                MallGoodsTypeBean targetType = (MallGoodsTypeBean) original.clone();
+                targetType.setTypeId(null);
+                targetType.setCustomerId(targetCustomerId);
+                targetType = goodsTypeRepository.saveAndFlush(targetType);
+                syncInfo.setToId(targetType.getTypeId());
+                syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo = syncInfoService.save(syncInfo);
+                syncInfoList.add(syncInfo);
+                targetGoodsType.add(targetType);
+            }
+        }
+        return targetGoodsType;
     }
 
     @Override

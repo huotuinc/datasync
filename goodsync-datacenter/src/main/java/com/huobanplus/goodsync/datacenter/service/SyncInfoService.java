@@ -44,4 +44,20 @@ public interface SyncInfoService {
      * @param customerId
      */
     void deleteByCustomerId(int customerId);
+
+    /**
+     * 是否导入过目标商户
+     *
+     * @param customerId
+     * @return
+     */
+    int countByToCustomerId(int customerId);
+
+    /**
+     * 根据fromId和type得到相应的syncInfo
+     *
+     * @param toCustomerId
+     * @return
+     */
+    List<MallSyncInfoBean> findByToCustomerId(int toCustomerId);
 }

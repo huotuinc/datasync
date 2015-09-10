@@ -3,7 +3,9 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallSpecValuesBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.SpecValueRepository;
 import com.huobanplus.goodsync.datacenter.service.SpecValueService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +58,37 @@ public class SpecValueServiceImpl implements SpecValueService {
             targetList.add(target);
         }
         return new SyncResultBean<>(targetList, syncInfoList);
+    }
+
+    @Override
+    public List<MallSpecValuesBean> batchUpdate(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue, List<MallSyncInfoBean> syncInfoList)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
+        List<MallSpecValuesBean> targetSpecValueList = new ArrayList<>();
+        for (MallSpecValuesBean original : originalSpecValue) {
+            int targetId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC_VALUE, syncInfoList);
+            if (targetId > 0) {
+                MallSpecValuesBean targetSpecValue = specValueRepository.findOne(targetId);
+                ClassHandler.ClassCopy(original, targetSpecValue);
+                targetSpecValue.setCustomerId(targetCustomerId);
+                targetSpecValueList.add(targetSpecValue);
+                specValueRepository.save(targetSpecValue);
+            } else {
+                MallSyncInfoBean syncInfo = new MallSyncInfoBean();
+                syncInfo.setFromId(original.getSpecValueId());
+                syncInfo.setFromCustomerId(targetCustomerId);
+                MallSpecValuesBean targetSpecValue = (MallSpecValuesBean) original.clone();
+                targetSpecValue.setSpecValueId(null);
+                targetSpecValue.setCustomerId(targetCustomerId);
+                targetSpecValue = specValueRepository.saveAndFlush(targetSpecValue);
+                syncInfo.setToId(targetSpecValue.getSpecValueId());
+                syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo.setType(Constant.SPEC_VALUE);
+                syncInfo = syncInfoService.save(syncInfo);
+                syncInfoList.add(syncInfo);
+                targetSpecValueList.add(targetSpecValue);
+            }
+        }
+        return targetSpecValueList;
     }
 
     @Override

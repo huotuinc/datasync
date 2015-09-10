@@ -3,6 +3,7 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsSpecIndexBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.dao.GoodsSpecIndexDao;
 import com.huobanplus.goodsync.datacenter.service.GoodsSpecIndexService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -34,6 +35,7 @@ public class GoodsSpecIndexServiceImpl implements GoodsSpecIndexService {
     }
 
     @Override
+    @PreBatchDel
     public int batchSave(int targetCustomerId, List<MallGoodsSpecIndexBean> originalList, List<MallSyncInfoBean> typeSyncInfo, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> specValueSyncInfo, List<MallSyncInfoBean> goodSyncInfo, List<MallSyncInfoBean> productSyncInfo) {
         int index = 0;
         for (MallGoodsSpecIndexBean specIndex : originalList) {
@@ -49,6 +51,28 @@ public class GoodsSpecIndexServiceImpl implements GoodsSpecIndexService {
             specIndex.setProductId(targetProId);
             specIndex.setCustomerId(targetCustomerId);
             goodsSpecIndexDao.add(specIndex);
+            index++;
+        }
+        return index;
+    }
+
+    @Override
+    @PreBatchDel
+    public int batchSave(int targetCustomerId, List<MallGoodsSpecIndexBean> originalList, List<MallSyncInfoBean> syncInfoList) {
+        int index = 0;
+        for (MallGoodsSpecIndexBean original : originalList) {
+            int targetTypeId = syncInfoService.getTargetId(original.getTypeId(), Constant.GOOD_TYPE, syncInfoList);
+            int targetSpecId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC, syncInfoList);
+            int targetSpecValueId = syncInfoService.getTargetId(original.getSpecValueId(), Constant.SPEC_VALUE, syncInfoList);
+            int targetGoodId = syncInfoService.getTargetId(original.getGoodsId(), Constant.GOOD, syncInfoList);
+            int targetProId = syncInfoService.getTargetId(original.getProductId(), Constant.PRODUCT, syncInfoList);
+            original.setTypeId(targetTypeId);
+            original.setSpecId(targetSpecId);
+            original.setSpecValueId(targetSpecValueId);
+            original.setGoodsId(targetGoodId);
+            original.setProductId(targetProId);
+            original.setCustomerId(targetCustomerId);
+            goodsSpecIndexDao.add(original);
             index++;
         }
         return index;

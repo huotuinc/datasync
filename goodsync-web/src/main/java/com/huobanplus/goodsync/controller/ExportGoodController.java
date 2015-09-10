@@ -6,6 +6,7 @@ import com.huobanplus.goodsync.handler.bean.ExportResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 导出商品到其他平台基础接口
@@ -27,5 +28,5 @@ public interface ExportGoodController {
      * @param request
      * @return 返回导出结果
      */
-    ApiResult export(String goodList, HttpServletRequest request) throws IOException, CloneNotSupportedException;
+    ApiResult export(String goodList, HttpServletRequest request) throws IOException, CloneNotSupportedException, IllegalAccessException, InstantiationException, InvocationTargetException;
 }
