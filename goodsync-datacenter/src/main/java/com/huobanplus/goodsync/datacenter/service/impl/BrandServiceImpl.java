@@ -38,7 +38,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Message(type = "同步", info = "商品品牌")
+    @Message(operation = "保存", desc = "商品品牌信息")
     public List<MallSyncInfoBean> batchSave(int customerId, List<MallBrandBean> originalBrand) throws CloneNotSupportedException {
         List<MallSyncInfoBean> savedList = new ArrayList<>();
         for (MallBrandBean brand : originalBrand) {
@@ -64,6 +64,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "商品品牌信息")
     public List<MallBrandBean> batchUpdate(List<MallBrandBean> originalBrand, List<MallSyncInfoBean> syncInfoList, int targetCustomerId)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallBrandBean> targetBrandList = new ArrayList<>();

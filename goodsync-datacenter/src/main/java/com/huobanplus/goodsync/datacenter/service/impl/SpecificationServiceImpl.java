@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.SpecificationRepository;
 import com.huobanplus.goodsync.datacenter.service.SpecificationService;
@@ -39,6 +40,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     }
 
     @Override
+    @Message(operation = "保存", desc = "规格信息")
     public SyncResultBean<MallSpecificationBean> batchSave(int targetCustomerId, List<MallSpecificationBean> originalSpec) throws CloneNotSupportedException {
         List<MallSpecificationBean> targetSpecList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
@@ -61,6 +63,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "规格信息")
     public List<MallSpecificationBean> batchUpdate(int targetCustomerId, List<MallSpecificationBean> originalSpec, List<MallSyncInfoBean> syncInfoList)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallSpecificationBean> targetSpecList = new ArrayList<>();

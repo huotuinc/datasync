@@ -16,7 +16,7 @@ public class AccountInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Object customerId = request.getSession().getAttribute("customerId");
         if (customerId == null) {
-            response.sendRedirect("/login.jsp");
+            response.sendRedirect("login.jsp");
             return false;
         }
         return true;

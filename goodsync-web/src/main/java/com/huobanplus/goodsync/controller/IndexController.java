@@ -18,7 +18,7 @@ public class IndexController {
     @Autowired
     private GoodsService goodsService;
 
-    @RequestMapping("/index")
+    @RequestMapping({"/index", ""})
     public String index() {
         return "index";
     }

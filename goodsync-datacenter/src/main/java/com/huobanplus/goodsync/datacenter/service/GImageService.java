@@ -29,6 +29,17 @@ public interface GImageService {
     List<MallGImagesBean> findByCustomerId(int customerId);
 
     /**
+     * 得到某商户指定关联商品的图片信息
+     *
+     * @param customerId
+     * @param goodsList
+     * @return
+     */
+    List<MallGImagesBean> findByGoods(int customerId, List<Integer> goodsList);
+
+    List<MallGImagesBean> findGImage(int customerId, List<Integer> goodsList);
+
+    /**
      * 导入商品图片到对应商户
      *
      * @param originalImages

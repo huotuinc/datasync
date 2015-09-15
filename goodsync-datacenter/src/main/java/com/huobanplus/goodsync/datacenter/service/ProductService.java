@@ -22,6 +22,8 @@ public interface ProductService {
      */
     List<MallProductBean> findByCustomerId(int customerId);
 
+    List<MallProductBean> findProduct(int customerId, List<Integer> goods);
+
     /**
      * 保存
      *

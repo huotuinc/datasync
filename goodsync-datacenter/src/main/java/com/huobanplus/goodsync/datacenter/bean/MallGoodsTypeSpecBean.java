@@ -10,9 +10,7 @@ import javax.persistence.*;
 @Data
 public class MallGoodsTypeSpecBean {
     private int specId;
-    private MallSpecificationBean specification;
     private int typeId;
-    private MallGoodsTypeBean goodsType;
     private String specStyle;
     private int customerId;
 }

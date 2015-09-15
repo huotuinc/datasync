@@ -30,6 +30,31 @@ public class GoodsSpecIndexDaoImpl extends BaseDaoImpl implements GoodsSpecIndex
     }
 
     @Override
+    public List<MallGoodsSpecIndexBean> findByGoods(int customerId, List<Integer> goods) {
+        String goodsFilter = "";
+        for (int i = 0; i < goods.size(); i++) {
+            if (i == goods.size() - 1) {
+                goodsFilter += goods.get(i);
+            } else {
+                goodsFilter += goods.get(i) + ",";
+            }
+        }
+        String sql = "SELECT * FROM Mall_Goods_Spec_Index WHERE GSI_Customer_Id=? AND Goods_Id IN (" + goodsFilter + ")";
+        List<MallGoodsSpecIndexBean> list = jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) -> {
+            MallGoodsSpecIndexBean specIndex = new MallGoodsSpecIndexBean();
+            specIndex.setTypeId(rs.getInt("Type_Id"));
+            specIndex.setSpecId(rs.getInt("Spec_Id"));
+            specIndex.setSpecValueId(rs.getInt("Spec_Value_Id"));
+            specIndex.setSpecValue(rs.getString("Spec_Value"));
+            specIndex.setGoodsId(rs.getInt("Goods_Id"));
+            specIndex.setProductId(rs.getInt("Product_Id"));
+            specIndex.setCustomerId(rs.getInt("GSI_Customer_Id"));
+            return specIndex;
+        });
+        return list;
+    }
+
+    @Override
     public int add(MallGoodsSpecIndexBean specIndex) {
         String sql = "INSERT INTO Mall_Goods_Spec_Index(Type_Id,Spec_Id,Spec_Value_Id,Spec_Value,Goods_Id,Product_Id,GSI_Customer_Id) " +
                 "VALUES(?,?,?,?,?,?,?)";

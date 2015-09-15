@@ -176,14 +176,18 @@ public class MallGoodsBean implements Cloneable {
     private int imgUpdateStatus;
     @Column(name = "Customer_Id")
     private int customerId;
-    @Column(name = "Ex_Parameters")
-    private String exParameters;
-    @Column(name = "Ex_Consult")
-    private String exConsult;
-    @Column(name = "Ex_ShoppintTips")
-    private String exShoppingTips;
-    @Column(name = "GroupPurchase_For")
-    private int groupPurchaseFor;
+    //    @Transient
+//    @Column(name = "Ex_Parameters")
+//    private String exParameters;
+//    @Transient
+//    @Column(name = "Ex_Consult")
+//    private String exConsult;
+//    @Transient
+//    @Column(name = "Ex_ShoppintTips")
+//    private String exShoppingTips;
+//    @Transient
+//    @Column(name = "GroupPurchase_For")
+//    private int groupPurchaseFor;
     @Column(name = "SellTags_Custom")
     private int sellTagsCustom;
     @Column(name = "SellTags")
@@ -212,6 +216,14 @@ public class MallGoodsBean implements Cloneable {
     private int rebateMode;
     @Column(name = "Individuation")
     private int individuation;
+    @Column(name = "MarketableTime")
+    private Date marketableTime;
+    @Column(name = "CreateTime")
+    private Date createTime;
+    @Column(name = "SalesType")
+    private int salesType;
+    @Column(name = "SalesSize")
+    private int salesSize;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

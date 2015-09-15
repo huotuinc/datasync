@@ -4,12 +4,11 @@ import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.MessageHandler;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.service.BatchDeletable;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 
 /**
@@ -27,7 +26,20 @@ public class AspectArchitecture {
     }
 
     @Before("@annotation(message)")
-    public void publishMsg(Message message) throws Throwable {
-        messageHandler.sendMessage("哈哈哈哈");
+    public void beforeMsg(Message message) throws IOException {
+        String beforeMessage = "正在" + message.operation() + message.desc() + "...";
+        messageHandler.sendMessage(beforeMessage);
+    }
+
+    @After("@annotation(message)")
+    public void afterMsg(Message message) throws IOException {
+        String afterMessage = message.operation() + message.desc() + "成功";
+        messageHandler.sendMessage(afterMessage);
+    }
+
+    @AfterThrowing("@annotation(message)")
+    public void errorMsg(Message message) throws IOException {
+        String throwMessage = message.operation() + message.desc() + "失败";
+        messageHandler.sendMessage(throwMessage);
     }
 }

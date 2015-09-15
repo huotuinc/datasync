@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by liual on 2015-09-05.
  */
-public interface GoodsSpecIndexService extends BatchDeletable{
+public interface GoodsSpecIndexService extends BatchDeletable {
     /**
      * 得到某商户的specIndex列表
      *
@@ -16,6 +16,8 @@ public interface GoodsSpecIndexService extends BatchDeletable{
      * @return
      */
     List<MallGoodsSpecIndexBean> findByCustomerId(int customerId);
+
+    List<MallGoodsSpecIndexBean> findSpecIndex(int customerId, List<Integer> goods);
 
     /**
      * 添加一个specIndex实体

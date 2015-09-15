@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>jjj</title>
+    <title>伙伴+|商品导入</title>
     <style type="text/css">
         /* css reset */
         body {
@@ -1264,8 +1264,8 @@
             font-family: "微软雅黑";
         }
     </style>
-    <script type="text/javascript" src="/resources/scripts/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="/resources/scripts/jquery.utils.js"></script>
+    <script type="text/javascript" src="<c:url value="/resources/scripts/jquery-1.7.2.min.js" />"></script>
+    <script type="text/javascript" src="<c:url value="/resources/scripts/jquery.utils.js" />"></script>
     <script type="text/javascript" src="<c:url value="/resources/scripts/jBox/jquery.jBox-2.3.min.js" />"></script>
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/scripts/jBox/Skins/Green/jbox.css"/>">
     <script type="text/javascript">
@@ -1301,10 +1301,10 @@
         </nav>
     </header>
 </div>
-<section class="main" style="background: url(/resources/images/muban.jpg) center center;">
+<section class="main" style="background: url(<c:url value="/resources/images/muban.jpg"/>) center center;">
     <!--登录框-->
     <div>
-        <img src="/resources/images/huobanshangchenglogo.png" width="15%">
+        <img src="<c:url value="/resources/images/huobanshangchenglogo.png" />" width="15%">
 
         <form style="height: 335px;">
             <div class="loginFormIpt showPlaceholder" style="text-align: center; margin: 0 auto;">
@@ -1327,7 +1327,7 @@
 
 
             <div style="width: 7%; position: fixed; top: 60px; margin-left: 88%;">
-                <img src="/resources/images/or.jpg" width="100%">
+                <img src="<c:url value="/resources/images/or.jpg" />" width="100%">
             </div>
         </form>
     </div>

@@ -10,17 +10,16 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10"/>
     <title></title>
-    <link type="text/css" rel="stylesheet" href="/resources/css/common.css"/>
-    <link rel="stylesheet" type="text/css" href="/resources/css/index.css"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/common.css" />"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/index.css" />"/>
     <style type="text/css">
         .gonggao:hover {
             cursor: pointer;
         }
     </style>
 </head>
-<body style="background-image: url(/resources/images/d7.jpg); background-color: #111; background-repeat: no-repeat; background-size: cover">
+<body style="background-image: url(<c:url value="/resources/images/d7.jpg" />); background-color: #111; background-repeat: no-repeat; background-size: cover">
 <div style="position: relative; width: 1000px; margin: 0 auto">
     <div class="logo">
         <img src="images/logo-2013-l.png" style="width: 240px;"/>

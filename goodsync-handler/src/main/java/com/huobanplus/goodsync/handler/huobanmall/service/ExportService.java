@@ -62,7 +62,7 @@ public class ExportService {
         goodsService.handleAssociatedInfo(goodsResult.getTargetList(), goodsCatResult.getSyncInfoList(), brandSyncInfoList, goodsTypeResult.getSyncInfoList());
 
         //导出商品图片及保存前后关联id
-        List<MallGImagesBean> originalGoodImgList = gImageService.findByCustomerId(currentCustomerId);
+        List<MallGImagesBean> originalGoodImgList = gImageService.findGImage(currentCustomerId, goods);
         SyncResultBean<MallGImagesBean> goodImgResult = gImageService.batchSave(targetCustomerId, originalGoodImgList);
         gImageService.handleAssociatedInfo(goodImgResult.getTargetList(), goodsResult.getSyncInfoList());
 
@@ -80,7 +80,7 @@ public class ExportService {
         specValueService.handleSpecId(specValueResult.getTargetList(), specValueResult.getSyncInfoList());
 
         //导出货品到目标商户并保存前后关联id
-        List<MallProductBean> originalProductList = productService.findByCustomerId(currentCustomerId);
+        List<MallProductBean> originalProductList = productService.findProduct(currentCustomerId, goods);
         SyncResultBean<MallProductBean> productResult = productService.batchSave(targetCustomerId, originalProductList);
         //处理关联字段
         productService.handleAssociatedInfo(productResult.getTargetList(), goodsResult.getSyncInfoList(), specResult.getSyncInfoList(), specValueResult.getSyncInfoList());
@@ -94,7 +94,7 @@ public class ExportService {
 
 
         //导出goodsSpecIndex信息到目标商户
-        List<MallGoodsSpecIndexBean> originalSpecIndex = specIndexService.findByCustomerId(currentCustomerId);
+        List<MallGoodsSpecIndexBean> originalSpecIndex = specIndexService.findSpecIndex(currentCustomerId, goods);
         specIndexService.batchSave(targetCustomerId,
                 originalSpecIndex,
                 goodsTypeResult.getSyncInfoList(),
@@ -123,7 +123,7 @@ public class ExportService {
         List<MallGoodsBean> originalGoods = goodsService.findGoods(currentCustomerId, goods);
         List<MallGoodsBean> targetGoods = goodsService.batchUpdate(originalGoods, syncInfoList, targetCustomerId);
         //更新商品图片
-        List<MallGImagesBean> originalImgs = gImageService.findByCustomerId(currentCustomerId);
+        List<MallGImagesBean> originalImgs = gImageService.findGImage(currentCustomerId, goods);
         List<MallGImagesBean> targetImgs = gImageService.batchUpdate(originalImgs, syncInfoList, targetCustomerId);
         //更新商品规格
         List<MallSpecificationBean> originalSpecs = specificationService.findByCustomerId(currentCustomerId);
@@ -132,13 +132,13 @@ public class ExportService {
         List<MallSpecValuesBean> originalSpecValues = specValueService.findByCustomerId(currentCustomerId);
         List<MallSpecValuesBean> targetSpecValues = specValueService.batchUpdate(targetCustomerId, originalSpecValues, syncInfoList);
         //更新货品
-        List<MallProductBean> originalPros = productService.findByCustomerId(currentCustomerId);
+        List<MallProductBean> originalPros = productService.findProduct(currentCustomerId, goods);
         List<MallProductBean> targetPros = productService.batchUpdate(targetCustomerId, originalPros, syncInfoList);
         //更新goods_type_desc
         List<MallGoodsTypeSpecBean> originalTypeSpec = goodsTypeSpecService.findByCustomerId(currentCustomerId);
         goodsTypeSpecService.batchSave(targetCustomerId, originalTypeSpec, syncInfoList);
         //更新goods_spec_index
-        List<MallGoodsSpecIndexBean> originalSpecIndex = specIndexService.findByCustomerId(currentCustomerId);
+        List<MallGoodsSpecIndexBean> originalSpecIndex = specIndexService.findSpecIndex(currentCustomerId, goods);
         specIndexService.batchSave(targetCustomerId, originalSpecIndex, syncInfoList);
 
         //更新各个关联字段和冗余字段

@@ -62,8 +62,8 @@ public class MallProductBean implements Cloneable {
     private String userPriceInfo;
     @Column(name = "UserIntegralInfo")
     private String userIntegralInfo;
-    @Column(name = "TestUserIntegralInfo")
-    private String testUserIntegralInfo;
+//    @Column(name = "TestUserIntegralInfo")
+//    private String testUserIntegralInfo;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

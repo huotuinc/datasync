@@ -43,12 +43,13 @@ public class HBExportGoodController implements ExportGoodController {
         authorBaseBean.setAccount(account);
         authorBaseBean.setPassword(DigestUtils.md5Hex(password));
         HBAuthorBean authorResult = (HBAuthorBean) syncHandler.authorization(authorBaseBean);
-        if (currentCustomerId == authorResult.getCustomerId()) {
-            return ApiResult.resultWith(ResultCodeEnum.SYNC_SAME_ACCOUNT.getResultCode(), "授权账户为当前登录账户");
-        }
         if (authorResult == null) {
             return ApiResult.resultWith(ResultCodeEnum.AUTHORITY_FAILED.getResultCode(), "授权失败");
         }
+        if (currentCustomerId == authorResult.getCustomerId()) {
+            return ApiResult.resultWith(ResultCodeEnum.SYNC_SAME_ACCOUNT.getResultCode(), "授权账户为当前登录账户");
+        }
+
         request.getSession().setAttribute("authorResult", authorResult);
         return ApiResult.resultWith(ResultCodeEnum.SUCCESS.getResultCode(), "授权成功");
     }

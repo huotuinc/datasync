@@ -3,6 +3,7 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 import com.huobanplus.goodsync.datacenter.bean.MallGoodsTypeSpecBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.dao.GoodsTypeSpecDao;
 import com.huobanplus.goodsync.datacenter.service.GoodsTypeSpecService;
@@ -41,6 +42,7 @@ public class GoodsTypeSpecServiceImpl implements GoodsTypeSpecService {
 
     @Override
     @PreBatchDel
+    @Message(operation = "保存", desc = "商品分类规格关联信息")
     public int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> typeSyncInfo) {
         int index = 0;
         for (MallGoodsTypeSpecBean original : originalList) {
@@ -57,6 +59,7 @@ public class GoodsTypeSpecServiceImpl implements GoodsTypeSpecService {
 
     @Override
     @PreBatchDel
+    @Message(operation = "更新", desc = "商品分类规格关联信息")
     public int batchSave(int targetCustomerId, List<MallGoodsTypeSpecBean> originalList, List<MallSyncInfoBean> syncInfoList) {
         int index = 0;
         for (MallGoodsTypeSpecBean original : originalList) {

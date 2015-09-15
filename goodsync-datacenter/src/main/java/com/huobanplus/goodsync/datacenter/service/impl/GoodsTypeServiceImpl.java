@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.GoodsTypeRepository;
 import com.huobanplus.goodsync.datacenter.service.GoodsTypeService;
@@ -40,7 +41,7 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
-    @PreBatchDel
+    @Message(operation = "保存", desc = "商品类型信息")
     public SyncResultBean<MallGoodsTypeBean> batchSave(int targetCustomerId, List<MallGoodsTypeBean> originalBeans) throws CloneNotSupportedException {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
@@ -63,6 +64,7 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "商品类型信息")
     public List<MallGoodsTypeBean> batchUpdate(int targetCustomerId, List<MallGoodsTypeBean> originalType, List<MallSyncInfoBean> syncInfoList)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();

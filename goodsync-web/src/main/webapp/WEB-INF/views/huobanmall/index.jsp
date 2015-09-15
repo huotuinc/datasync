@@ -10,7 +10,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10"/>
     <title></title>
     <link type="text/css" rel="stylesheet" href="/resources/css/common.css"/>
     <link rel="stylesheet" type="text/css" href="/resources/css/index.css"/>

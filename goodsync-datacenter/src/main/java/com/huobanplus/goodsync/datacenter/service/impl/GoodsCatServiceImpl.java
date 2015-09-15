@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.GoodsCatRepository;
 import com.huobanplus.goodsync.datacenter.service.GoodsCatService;
@@ -40,6 +41,7 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     }
 
     @Override
+    @Message(operation = "保存", desc = "商品分类信息")
     public SyncResultBean<MallGoodsCatBean> batchSave(int targetCustomerId, List<MallGoodsCatBean> originalBeans) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsCatBean> targetGoodsCat = new ArrayList<>();
@@ -65,6 +67,7 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "商品分类信息")
     public List<MallGoodsCatBean> batchUpdate(int targetCustomerId, List<MallGoodsCatBean> originalCats, List<MallSyncInfoBean> syncInfoList)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallGoodsCatBean> targetCatList = new ArrayList<>();
@@ -95,6 +98,7 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "商品分类信息")
     public void handleAssociatedInfo(List<MallGoodsCatBean> targetCats, List<MallSyncInfoBean> syncInfoList) {
         targetCats.forEach(goodsCat -> {
             int targetParentId = syncInfoService.getTargetId(goodsCat.getParentId(), Constant.GOOD_CAT, syncInfoList);

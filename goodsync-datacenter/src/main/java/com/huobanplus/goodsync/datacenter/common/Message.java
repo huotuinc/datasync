@@ -12,16 +12,16 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Message {
     /**
-     * 类型，比如保存，删除
+     * 操作
      *
      * @return
      */
-    String type();
+    String operation();
 
     /**
      * 信息，比如商品，货品等
      *
      * @return
      */
-    String info();
+    String desc();
 }

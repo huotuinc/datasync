@@ -24,9 +24,31 @@
           href="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.10.3.custom.min.css"/>">
     <script type="text/javascript" src="<c:url value="/resources/scripts/sockjs-0.3.4.min.js" />"></script>
     <title>商品列表</title>
+    <style type="text/css">
+        .box {
+            height: 300px;
+            overflow-x: hidden;
+            overflow-y: inherit;
+            margin: 10px;
+            border: 1px solid #ddd;
+            width: 600px;
+        }
+
+        .box p {
+            font-size: 14px;
+            line-height: 30px;
+            margin: 10px;
+        }
+
+        .size {
+            margin: 0 auto;
+            width: 640px;
+        }
+    </style>
     <script type="text/javascript">
         var type = 0;
         var huobanAjax = "<c:url value="/huobanmall/" />"
+        var ws;
         $(function () {
             $("#checkAll").change(function () {
                 var $chkGoodId = $("input[name='chkGoodId']");
@@ -36,24 +58,44 @@
                     $chkGoodId.removeAttr("checked");
                 }
             });
+            connectSocket();
         });
+
+        function connectSocket() {
+            ws = new SockJS("<c:url value="/sync/message" />");
+            ws.onopen = function () {
+                console.log("Info: connection opened");
+            }
+            ws.onmessage = function (event) {
+                console.log("message:" + event.data);
+                $("#msgBench").append('<p>' + event.data + '</p>');
+            }
+        }
 
         var exportHandler = {
             export: function () {
-                J.ShowDialogButton("export_dialog", "选择导出平台", {
-                    "ok": function () {
-                        var ws = new SockJS("http://" + window.location.host + "/sync/message");
-                        ws.onopen = function () {
-                            console.log("Info: connection opened");
+                var goodList = "";
+                if ($("#checkAll").attr("checked")) {
+                    goodList = "all";
+                } else {
+                    var $chkGoodId = $("input[name='chkGoodId']:checked");
+                    $chkGoodId.each(function (o, item) {
+                        if (o == $chkGoodId.length - 1) {
+                            goodList += $(item).val();
+                        } else {
+                            goodList += $(item).val() + ",";
                         }
-                        ws.onmessage = function (event) {
-                            console.log("message:" + event.data);
-                        }
-                        ws.send("sdfsdf");
-                    }
-                });
+                    })
+                }
+                if (goodList.length == 0) {
+                    $.jBox.tip("您还未选择任何商品");
+                    return;
+                }
+                $("#hbGoodList").val(goodList);
+                J.ShowDialogButton("export_dialog", "选择导出平台", {});
             },
             exportToHuoban: function () {
+                var goodList = $("#hbGoodList").val();
                 J.ShowDialog("export_huoban", "伙伴商城授权登录", function () {
                     var account = $.trim($("#account").val());
                     var password = $.trim($("#password").val());
@@ -62,15 +104,31 @@
                         password: password
                     }
                     J.GetJsonRespons(huobanAjax + "authority", requestData, function (json) {
-                        if (json == 1) {
-                            $.jBox.tip("授权成功");
-                            jBox.confirm('确定要信息同步到指定商户？', '提示', function (v, h, f) {
-                                if (v == "ok") {
-                                }
-                                return true;
-                            });
+                        if (json.resultCode == 200) {
+                            $.jBox.tip(json.desc, "success");
+                            setTimeout(function () {
+                                jBox.confirm('确定要信息同步到指定商户？将会更新覆盖已导出过的商品信息', '提示', function (v, h, f) {
+                                    if (v == "ok") {
+                                        $("#msgBench").html("");
+                                        J.ShowDialogButton("msgBench_dialog", "导出进度", {
+                                            "关闭": function () {
+                                                $(this).dialog('close');
+                                            }
+                                        });
+
+                                        J.GetJsonRespons(huobanAjax + "export", {goodList: goodList}, function (json) {
+                                            if (json.resultCode == 200) {
+                                                $.jBox.tip(json.desc, "success");
+                                                $("#msgBench").append("<p>" + json.desc + "</p>");
+                                            }
+                                        }, function () {
+                                        }, J.PostMethod);
+                                    }
+                                    return true;
+                                });
+                            }, 400);
                         } else {
-                            $.jBox.tip("授权失败");
+                            $.jBox.tip(json.desc);
                         }
                     }, function () {
                     }, J.PostMethod);
@@ -83,6 +141,8 @@
 </head>
 <body style="background-color:#e4e7ea">
 <div id="export_dialog" style="padding:20px;display: none;">
+    <input type="hidden" id="hbGoodList"/>
+
     <div class="fg-button clearfix">
         <a href="javascript:exportHandler.exportToHuoban();">导出到伙伴商城</a>
     </div>
@@ -95,6 +155,10 @@
     <p>账户名：<input type="text" id="account"/></p>
 
     <p>账户密码：<input type="password" id="password"/></p>
+</div>
+<div id="msgBench_dialog" style="padding: 20px;display:none;">
+    <div class="box" id="msgBench">
+    </div>
 </div>
 <div class="contentpanel">
     <div class="block">
@@ -145,7 +209,7 @@
                             <c:forEach var="good" items="${goodsList}">
                                 <tr height="28px" class="odd">
                                     <td align="center">
-                                        <input type="checkbox" name="chkGoodId" data="${good.goodsId}"/>
+                                        <input type="checkbox" name="chkGoodId" value="${good.goodsId}"/>
                                     </td>
                                     <td align="center">
                                             ${good.name}

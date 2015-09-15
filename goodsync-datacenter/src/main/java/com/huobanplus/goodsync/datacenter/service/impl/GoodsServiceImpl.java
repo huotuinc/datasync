@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.json.GoodPdtDesc;
 import com.huobanplus.goodsync.datacenter.json.GoodSpecDesc;
@@ -15,6 +16,7 @@ import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +54,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    @Message(operation = "保存", desc = "商品信息")
     public SyncResultBean<MallGoodsBean> batchSave(int targetCustomerId, List<MallGoodsBean> originalGoodsList) throws CloneNotSupportedException {
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
         List<MallGoodsBean> targetGoodsList = new ArrayList<>();
@@ -76,6 +79,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "商品信息")
     public List<MallGoodsBean> batchUpdate(List<MallGoodsBean> originalGoods, List<MallSyncInfoBean> syncInfoList, int targetCustomerId)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallGoodsBean> targetGoodList = new ArrayList<>();
@@ -111,6 +115,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "商品信息关联字段")
     public void handleAssociatedInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsCatSyncInfo, List<MallSyncInfoBean> brandSyncInfo, List<MallSyncInfoBean> goodsTypeSyncInfo) {
         targetList.forEach(targetGood -> {
             int targetCatId = syncInfoService.getTargetId(targetGood.getCatId(), Constant.GOOD_CAT, goodsCatSyncInfo);
@@ -124,15 +129,18 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "商品信息关联图片字段")
     public void handleDefaultImg(List<MallGoodsBean> targetList, List<MallSyncInfoBean> goodsImgSyncInfo) {
         targetList.forEach(target -> {
-            int targetImgId = syncInfoService.getTargetId(Integer.parseInt(target.getImageDefault()), Constant.GOOD_Img, goodsImgSyncInfo);
+            int originalImgId = StringUtils.isEmpty(target.getImageDefault()) ? 0 : Integer.parseInt(target.getImageDefault());
+            int targetImgId = syncInfoService.getTargetId(originalImgId, Constant.GOOD_Img, goodsImgSyncInfo);
             target.setImageDefault(String.valueOf(targetImgId));
             goodsRepository.save(target);
         });
     }
 
     @Override
+    @Message(operation = "处理", desc = "商品信息冗余字段")
     public void handleSpecAndPdtInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> specSyncInfo, List<MallSyncInfoBean> productSyncInfo, List<MallSyncInfoBean> specValueSyncInfo) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         for (MallGoodsBean target : targetList) {
@@ -178,6 +186,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "商品信息关联字段")
     public void handleAssociatedAllInfo(List<MallGoodsBean> targetList, List<MallSyncInfoBean> syncInfoList) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         for (MallGoodsBean target : targetList) {

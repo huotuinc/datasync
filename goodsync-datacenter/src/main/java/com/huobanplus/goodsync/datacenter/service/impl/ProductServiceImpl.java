@@ -7,6 +7,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.json.ProductProps;
 import com.huobanplus.goodsync.datacenter.repository.ProductRepository;
@@ -38,11 +39,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<MallProductBean> findProduct(int customerId, List<Integer> goods) {
+        if (goods == null) {
+            return productRepository.findByCustomerId(customerId);
+        }
+        return productRepository.findByGoods(customerId, goods);
+    }
+
+    @Override
     public MallProductBean save(MallProductBean productBean) {
         return productRepository.save(productBean);
     }
 
     @Override
+    @Message(operation = "保存", desc = "货品信息")
     public SyncResultBean<MallProductBean> batchSave(int targetCustomerId, List<MallProductBean> originalList) throws CloneNotSupportedException {
         List<MallProductBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
@@ -55,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
             target.setCustomerId(targetCustomerId);
             target.setUserIntegralInfo(null);
             target.setUserPriceInfo(null);
-            target.setTestUserIntegralInfo(null);
+//            target.setTestUserIntegralInfo(null);
             target.setUpTime(new Date());
             target.setLastModify(new Date());
             target = productRepository.saveAndFlush(target);
@@ -70,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "货品信息")
     public List<MallProductBean> batchUpdate(int targetCustomerId, List<MallProductBean> originalList, List<MallSyncInfoBean> syncInfoList)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallProductBean> targetProductList = new ArrayList<>();
@@ -81,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
                 targetProduct.setCustomerId(targetCustomerId);
                 targetProduct.setUserIntegralInfo(null);
                 targetProduct.setUserPriceInfo(null);
-                targetProduct.setTestUserIntegralInfo(null);
+//                targetProduct.setTestUserIntegralInfo(null);
                 targetProduct.setLastModify(new Date());
                 targetProductList.add(targetProduct);
                 productRepository.save(targetProduct);
@@ -94,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
                 targetProduct.setProductId(null);
                 targetProduct.setUserIntegralInfo(null);
                 targetProduct.setUserPriceInfo(null);
-                targetProduct.setTestUserIntegralInfo(null);
+//                targetProduct.setTestUserIntegralInfo(null);
                 targetProduct = productRepository.saveAndFlush(targetProduct);
                 syncInfo.setToId(targetProduct.getProductId());
                 syncInfo.setToCustomerId(targetCustomerId);
@@ -108,6 +119,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "货品关联字段")
     public void handleAssociatedInfo(List<MallProductBean> targetList, List<MallSyncInfoBean> goodSyncInfoList, List<MallSyncInfoBean> specSyncInfoList, List<MallSyncInfoBean> specValueSyncInfoList) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         for (MallProductBean target : targetList) {
@@ -131,6 +143,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "货品关联字段")
     public void handleAssociatedInfo(List<MallProductBean> targetList, List<MallSyncInfoBean> syncInfo) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         for (MallProductBean target : targetList) {

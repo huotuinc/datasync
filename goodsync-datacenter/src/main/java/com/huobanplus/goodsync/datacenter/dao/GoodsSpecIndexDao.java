@@ -10,6 +10,8 @@ import java.util.List;
 public interface GoodsSpecIndexDao {
     List<MallGoodsSpecIndexBean> findByCustomerId(int customerId);
 
+    List<MallGoodsSpecIndexBean> findByGoods(int customerId, List<Integer> goods);
+
     int add(MallGoodsSpecIndexBean specIndex);
 
     void deleteByCustomerId(int customerId);

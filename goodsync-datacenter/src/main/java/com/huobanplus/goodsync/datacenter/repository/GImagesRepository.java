@@ -13,6 +13,9 @@ import java.util.List;
 public interface GImagesRepository extends JpaRepository<MallGImagesBean, Integer> {
     List<MallGImagesBean> findByCustomerId(int customerId);
 
+    @Query("select gimg from MallGImagesBean gimg where gimg.customerId=?1 and gimg.goodId in ?2")
+    List<MallGImagesBean> findByGoods(int customerId, List<Integer> goodsId);
+
     @Modifying
     @Query("delete from MallGImagesBean where customerId=?1")
     void deleteByCustomerId(int customerId);

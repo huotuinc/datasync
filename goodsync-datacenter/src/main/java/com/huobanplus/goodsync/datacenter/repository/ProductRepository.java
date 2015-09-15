@@ -13,6 +13,9 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<MallProductBean, Integer> {
     List<MallProductBean> findByCustomerId(int customerId);
 
+    @Query("select product from MallProductBean product where product.customerId=?1 and product.goodsId in ?2")
+    List<MallProductBean> findByGoods(int customerId, List<Integer> goods);
+
     @Modifying
     @Query("delete from MallProductBean where customerId=?1")
     void deleteByCustomerId(int customerId);

@@ -5,6 +5,7 @@ import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.SpecValueRepository;
 import com.huobanplus.goodsync.datacenter.service.SpecValueService;
@@ -39,6 +40,7 @@ public class SpecValueServiceImpl implements SpecValueService {
     }
 
     @Override
+    @Message(operation = "保存", desc = "规格值信息")
     public SyncResultBean<MallSpecValuesBean> batchSave(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue) throws CloneNotSupportedException {
         List<MallSpecValuesBean> targetList = new ArrayList<>();
         List<MallSyncInfoBean> syncInfoList = new ArrayList<>();
@@ -61,6 +63,7 @@ public class SpecValueServiceImpl implements SpecValueService {
     }
 
     @Override
+    @Message(operation = "更新", desc = "规格值信息")
     public List<MallSpecValuesBean> batchUpdate(int targetCustomerId, List<MallSpecValuesBean> originalSpecValue, List<MallSyncInfoBean> syncInfoList)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallSpecValuesBean> targetSpecValueList = new ArrayList<>();
@@ -92,6 +95,7 @@ public class SpecValueServiceImpl implements SpecValueService {
     }
 
     @Override
+    @Message(operation = "处理", desc = "规格值关联字段")
     public void handleSpecId(List<MallSpecValuesBean> targetList, List<MallSyncInfoBean> specSyncInfoList) {
         targetList.forEach(target -> {
             int targetSpecId = syncInfoService.getTargetId(target.getSpecId(), Constant.SPEC_VALUE, specSyncInfoList);
