@@ -22,7 +22,7 @@ import java.util.List;
  * Created by liual on 2015-09-02.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class SpecificationServiceImpl implements SpecificationService {
     @Autowired
     private SpecificationRepository specificationRepository;

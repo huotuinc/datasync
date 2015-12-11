@@ -1,17 +1,13 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.Message;
-import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.json.GoodPdtDesc;
 import com.huobanplus.goodsync.datacenter.json.GoodSpecDesc;
 import com.huobanplus.goodsync.datacenter.repository.GoodsRepository;
-import com.huobanplus.goodsync.datacenter.service.BrandService;
 import com.huobanplus.goodsync.datacenter.service.GoodsService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +23,6 @@ import java.util.*;
  * Created by liual on 2015-09-02.
  */
 @Service
-@Transactional
 public class GoodsServiceImpl implements GoodsService {
     @Autowired
     private GoodsRepository goodsRepository;

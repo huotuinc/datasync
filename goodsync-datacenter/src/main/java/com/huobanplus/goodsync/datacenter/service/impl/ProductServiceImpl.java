@@ -23,14 +23,13 @@ import java.util.*;
  * Created by liual on 2015-09-01.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
     private SyncInfoService syncInfoService;
 
-    @Transactional(readOnly = true)
     @Override
     public List<MallProductBean> findByCustomerId(int customerId) {
         return productRepository.findByCustomerId(customerId);

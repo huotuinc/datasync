@@ -21,7 +21,7 @@ import java.util.List;
  * Created by liual on 2015-09-02.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class GImageServiceImpl implements GImageService {
     @Autowired
     private GImagesRepository gImagesRepository;

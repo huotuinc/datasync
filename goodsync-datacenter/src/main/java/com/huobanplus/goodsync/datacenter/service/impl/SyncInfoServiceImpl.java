@@ -14,7 +14,7 @@ import java.util.List;
  * Created by liual on 2015-09-02.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class SyncInfoServiceImpl implements SyncInfoService {
     @Autowired
     private SyncInfoRepository syncInfoRepository;

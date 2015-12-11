@@ -18,7 +18,7 @@ import java.util.List;
  * Created by liual on 2015-09-05.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class GoodsSpecIndexServiceImpl implements GoodsSpecIndexService {
     @Autowired
     private GoodsSpecIndexDao goodsSpecIndexDao;

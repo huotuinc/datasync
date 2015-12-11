@@ -22,7 +22,7 @@ import java.util.List;
  * Created by liual on 2015-09-02.
  */
 @Service
-@Transactional
+@Transactional(value = "transactionManager")
 public class GoodsTypeServiceImpl implements GoodsTypeService {
     @Autowired
     private GoodsTypeRepository goodsTypeRepository;
@@ -35,7 +35,6 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<MallGoodsTypeBean> findByCustomerId(int customerId) {
         return goodsTypeRepository.findByCustomerId(customerId);
     }
