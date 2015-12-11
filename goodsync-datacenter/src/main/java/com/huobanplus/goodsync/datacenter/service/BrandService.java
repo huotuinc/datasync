@@ -2,7 +2,6 @@ package com.huobanplus.goodsync.datacenter.service;
 
 import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
-import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

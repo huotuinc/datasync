@@ -1,6 +1,7 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.huobanplus.goodsync.datacenter.bean.MallGoodsBean;
 import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
 import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
@@ -84,4 +85,6 @@ public interface ProductService {
      * @param customerId
      */
     void deleteByCustomerId(int customerId);
+
+    List<MallProductBean> findByGoodsId(int goodId);
 }

@@ -44,11 +44,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
 
+
     @Autowired
     private AccountInterceptor accountInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(accountInterceptor).excludePathPatterns("/**/login");
+        registry.addInterceptor(accountInterceptor).excludePathPatterns("/**/login").excludePathPatterns("/**/sync/message");
     }
+
 }

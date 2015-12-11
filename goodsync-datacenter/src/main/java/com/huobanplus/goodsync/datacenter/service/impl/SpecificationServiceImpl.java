@@ -69,8 +69,8 @@ public class SpecificationServiceImpl implements SpecificationService {
         List<MallSpecificationBean> targetSpecList = new ArrayList<>();
         for (MallSpecificationBean original : originalSpec) {
             int targetId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC, syncInfoList);
-            if (targetId > 0) {
-                MallSpecificationBean targetSpec = specificationRepository.findOne(targetId);
+            MallSpecificationBean targetSpec = specificationRepository.findOne(targetId);
+            if (targetSpec != null) {
                 ClassHandler.ClassCopy(original, targetSpec);
                 targetSpec.setCustomerId(targetCustomerId);
                 targetSpecList.add(targetSpec);
@@ -79,15 +79,16 @@ public class SpecificationServiceImpl implements SpecificationService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getSpecId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallSpecificationBean targetSpec = (MallSpecificationBean) original.clone();
-                targetSpec.setSpecId(null);
-                targetSpec.setCustomerId(targetCustomerId);
-                targetSpec = specificationRepository.saveAndFlush(targetSpec);
-                syncInfo.setToId(targetSpec.getSpecId());
+                MallSpecificationBean newTarget = (MallSpecificationBean) original.clone();
+                newTarget.setSpecId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget = specificationRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getSpecId());
                 syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo.setType(Constant.SPEC);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetSpecList.add(targetSpec);
+                targetSpecList.add(newTarget);
             }
         }
         return targetSpecList;

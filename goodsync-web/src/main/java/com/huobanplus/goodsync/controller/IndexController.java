@@ -30,4 +30,12 @@ public class IndexController {
         model.addAttribute("goodsList", goodsList);
         return "export";
     }
+
+    @RequestMapping("/bulkDiscount")
+    public String bulkDiscount(HttpServletRequest request, Model model) {
+        int currentCustomerId = (int) request.getSession().getAttribute("customerId");
+        List<MallGoodsBean> goodsList = goodsService.findByCustomerId(currentCustomerId);
+        model.addAttribute("goodsList", goodsList);
+        return "bulk_discount";
+    }
 }

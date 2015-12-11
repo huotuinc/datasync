@@ -52,6 +52,8 @@ public class MallGoodsTypeBean implements Cloneable{
     private Date lastModify;
     @Column(name = "Customer_Id")
     private int customerId;
+    @Column(name = "Vir_CustomType")
+    private int virCustomType;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

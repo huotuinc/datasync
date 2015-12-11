@@ -17,9 +17,8 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan(basePackages = "com.huobanplus.goodsync.datacenter")
 @ImportResource({"classpath:datasource_test.xml", "classpath:datasource_pro.xml"})
-@EnableJpaRepositories(basePackages = "com.huobanplus.goodsync.datacenter.repository",
-        entityManagerFactoryRef = "entityManagerFactory",
-        transactionManagerRef = "transactionManager")
+@EnableJpaRepositories(basePackages = "com.huobanplus.goodsync.datacenter.repository"
+)
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableAspectJAutoProxy
 public class DataCenterConfig {

@@ -1,6 +1,5 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
@@ -8,7 +7,6 @@ import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.Message;
-import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.json.ProductProps;
 import com.huobanplus.goodsync.datacenter.repository.ProductRepository;
 import com.huobanplus.goodsync.datacenter.service.ProductService;
@@ -86,8 +84,8 @@ public class ProductServiceImpl implements ProductService {
         List<MallProductBean> targetProductList = new ArrayList<>();
         for (MallProductBean original : originalList) {
             int targetId = syncInfoService.getTargetId(original.getProductId(), Constant.PRODUCT, syncInfoList);
-            if (targetId > 0) {
-                MallProductBean targetProduct = productRepository.findOne(targetId);
+            MallProductBean targetProduct = productRepository.findOne(targetId);
+            if (targetProduct != null) {
                 ClassHandler.ClassCopy(original, targetProduct);
                 targetProduct.setCustomerId(targetCustomerId);
                 targetProduct.setUserIntegralInfo(null);
@@ -100,18 +98,18 @@ public class ProductServiceImpl implements ProductService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getProductId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallProductBean targetProduct = (MallProductBean) original.clone();
-                targetProduct.setCustomerId(targetCustomerId);
-                targetProduct.setProductId(null);
-                targetProduct.setUserIntegralInfo(null);
-                targetProduct.setUserPriceInfo(null);
-//                targetProduct.setTestUserIntegralInfo(null);
-                targetProduct = productRepository.saveAndFlush(targetProduct);
-                syncInfo.setToId(targetProduct.getProductId());
+                MallProductBean newTarget = (MallProductBean) original.clone();
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget.setProductId(null);
+                newTarget.setUserIntegralInfo(null);
+                newTarget.setUserPriceInfo(null);
+//                newTarget.setTestUserIntegralInfo(null);
+                newTarget = productRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getProductId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.PRODUCT);
                 syncInfo = syncInfoService.save(syncInfo);
-                targetProductList.add(targetProduct);
+                targetProductList.add(newTarget);
                 syncInfoList.add(syncInfo);
             }
         }
@@ -169,5 +167,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteByCustomerId(int customerId) {
         productRepository.deleteByCustomerId(customerId);
+    }
+
+    @Override
+    public List<MallProductBean> findByGoodsId(int goodId) {
+        return productRepository.findByGoodsId(goodId);
     }
 }

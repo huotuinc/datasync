@@ -1,15 +1,14 @@
 package com.huobanplus.goodsync.handler.huobanmall.service;
 
 import com.huobanplus.goodsync.datacenter.bean.*;
-import com.huobanplus.goodsync.datacenter.common.ClassHandler;
-import com.huobanplus.goodsync.datacenter.common.Constant;
+import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
+import com.huobanplus.goodsync.datacenter.bean.MallGImagesBean;
 import com.huobanplus.goodsync.datacenter.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,7 +76,7 @@ public class ExportService {
         List<MallSpecValuesBean> originalSpecValueList = specValueService.findByCustomerId(currentCustomerId);
         SyncResultBean<MallSpecValuesBean> specValueResult = specValueService.batchSave(targetCustomerId, originalSpecValueList);
         //处理specId
-        specValueService.handleSpecId(specValueResult.getTargetList(), specValueResult.getSyncInfoList());
+        specValueService.handleSpecId(specValueResult.getTargetList(), specResult.getSyncInfoList());
 
         //导出货品到目标商户并保存前后关联id
         List<MallProductBean> originalProductList = productService.findProduct(currentCustomerId, goods);

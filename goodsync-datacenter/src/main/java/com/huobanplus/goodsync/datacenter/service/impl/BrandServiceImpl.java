@@ -2,11 +2,9 @@ package com.huobanplus.goodsync.datacenter.service.impl;
 
 import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
 import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
-import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.Message;
-import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.BrandRepository;
 import com.huobanplus.goodsync.datacenter.service.BrandService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -70,9 +68,9 @@ public class BrandServiceImpl implements BrandService {
         List<MallBrandBean> targetBrandList = new ArrayList<>();
         for (MallBrandBean original : originalBrand) {
             int targetId = syncInfoService.getTargetId(original.getBrandId(), Constant.BRAND, syncInfoList);
-            if (targetId > 0) {
+            MallBrandBean targetBrand = brandRepository.findOne(targetId);
+            if (targetBrand != null) {
                 //存在则更新
-                MallBrandBean targetBrand = brandRepository.findOne(targetId);
                 ClassHandler.ClassCopy(original, targetBrand);
                 targetBrand.setCustomerId(targetCustomerId);
                 targetBrandList.add(targetBrand);
@@ -82,15 +80,15 @@ public class BrandServiceImpl implements BrandService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getBrandId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallBrandBean targetBrand = (MallBrandBean) original.clone();
-                targetBrand.setBrandId(null);
-                targetBrand = brandRepository.saveAndFlush(targetBrand);
-                syncInfo.setToId(targetBrand.getBrandId());
+                MallBrandBean newTarget = (MallBrandBean) original.clone();
+                newTarget.setBrandId(null);
+                newTarget = brandRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getBrandId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.BRAND);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetBrandList.add(targetBrand);
+                targetBrandList.add(newTarget);
             }
         }
         return targetBrandList;

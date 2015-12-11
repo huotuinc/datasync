@@ -3,6 +3,9 @@ package com.huobanplus.goodsync.boot;
 import com.huobanplus.goodsync.config.WebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
 /**
  * Created by liual on 2015-09-01.
  */

@@ -11,9 +11,10 @@ import java.util.List;
  * Created by liual on 2015-09-02.
  */
 public interface GoodsRepository extends JpaRepository<MallGoodsBean, Integer> {
+    @Query("select good from MallGoodsBean good where good.customerId=?1 and good.disabled=0")
     List<MallGoodsBean> findByCustomerId(int customerId);
 
-    @Query("select good from MallGoodsBean good where good.customerId=?1 and good.goodsId in ?2")
+    @Query("select good from MallGoodsBean good where good.customerId=?1 and good.disabled=0 and good.goodsId in ?2")
     List<MallGoodsBean> findByCustomerIdAndGoodsIdIn(int customerId, List<Integer> goodList);
 
     @Modifying

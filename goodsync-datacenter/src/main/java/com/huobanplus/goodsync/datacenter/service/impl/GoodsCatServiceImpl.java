@@ -73,8 +73,8 @@ public class GoodsCatServiceImpl implements GoodsCatService {
         List<MallGoodsCatBean> targetCatList = new ArrayList<>();
         for (MallGoodsCatBean original : originalCats) {
             int targetId = syncInfoService.getTargetId(original.getCatId(), Constant.GOOD_CAT, syncInfoList);
-            if (targetId > 0) {
-                MallGoodsCatBean targetCat = goodsCatRepository.findOne(targetId);
+            MallGoodsCatBean targetCat = goodsCatRepository.findOne(targetId);
+            if (targetCat != null) {
                 ClassHandler.ClassCopy(original, targetCat);
                 targetCat.setCustomerId(targetCustomerId);
                 targetCatList.add(targetCat);
@@ -82,16 +82,16 @@ public class GoodsCatServiceImpl implements GoodsCatService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getCatId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallGoodsCatBean targetCat = (MallGoodsCatBean) original.clone();
-                targetCat.setCatId(null);
-                targetCat.setCustomerId(targetCustomerId);
-                targetCat = goodsCatRepository.saveAndFlush(targetCat);
-                syncInfo.setToId(targetCat.getCatId());
+                MallGoodsCatBean newTarget = (MallGoodsCatBean) original.clone();
+                newTarget.setCatId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget = goodsCatRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getCatId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.GOOD_CAT);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetCatList.add(targetCat);
+                targetCatList.add(newTarget);
             }
         }
         return targetCatList;

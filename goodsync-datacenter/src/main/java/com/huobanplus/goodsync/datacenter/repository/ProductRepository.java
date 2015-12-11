@@ -19,4 +19,6 @@ public interface ProductRepository extends JpaRepository<MallProductBean, Intege
     @Modifying
     @Query("delete from MallProductBean where customerId=?1")
     void deleteByCustomerId(int customerId);
+    
+    List<MallProductBean> findByGoodsId(int goodId);
 }

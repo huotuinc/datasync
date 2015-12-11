@@ -6,7 +6,6 @@ import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.Message;
-import com.huobanplus.goodsync.datacenter.common.PreBatchDel;
 import com.huobanplus.goodsync.datacenter.repository.GImagesRepository;
 import com.huobanplus.goodsync.datacenter.service.GImageService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
@@ -83,8 +82,8 @@ public class GImageServiceImpl implements GImageService {
         List<MallGImagesBean> targetImgList = new ArrayList<>();
         for (MallGImagesBean original : originalImages) {
             int targetId = syncInfoService.getTargetId(original.getGimageId(), Constant.GOOD_Img, syncInfoList);
-            if (targetId > 0) {
-                MallGImagesBean targetImg = gImagesRepository.findOne(targetId);
+            MallGImagesBean targetImg = gImagesRepository.findOne(targetId);
+            if (targetImg != null) {
                 ClassHandler.ClassCopy(original, targetImg);
                 targetImg.setCustomerId(targetCustomerId);
                 targetImgList.add(targetImg);
@@ -94,15 +93,15 @@ public class GImageServiceImpl implements GImageService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getGimageId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallGImagesBean targetImage = (MallGImagesBean) original.clone();
-                targetImage.setGimageId(null);
-                targetImage.setCustomerId(targetCustomerId);
-                targetImage = gImagesRepository.saveAndFlush(targetImage);
-                syncInfo.setToId(targetImage.getGimageId());
+                MallGImagesBean newTarget = (MallGImagesBean) original.clone();
+                newTarget.setGimageId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget = gImagesRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getGimageId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.GOOD_Img);
                 syncInfo = syncInfoService.save(syncInfo);
-                targetImgList.add(targetImage);
+                targetImgList.add(newTarget);
                 syncInfoList.add(syncInfo);
             }
         }

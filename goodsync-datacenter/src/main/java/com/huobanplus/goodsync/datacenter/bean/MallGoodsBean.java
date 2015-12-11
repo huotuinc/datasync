@@ -81,9 +81,9 @@ public class MallGoodsBean implements Cloneable {
     @Column(name = "Params")
     private String params;
     @Column(name = "Uptime")
-    private long upTime;
+    private Long upTime;
     @Column(name = "Downtime")
-    private long downTime;
+    private Long downTime;
     @Column(name = "Last_Modify")
     private Date lastModify;
     @Column(name = "Disabled")
@@ -218,12 +218,12 @@ public class MallGoodsBean implements Cloneable {
     private int individuation;
     @Column(name = "MarketableTime")
     private Date marketableTime;
-    @Column(name = "CreateTime")
-    private Date createTime;
-    @Column(name = "SalesType")
-    private int salesType;
-    @Column(name = "SalesSize")
-    private int salesSize;
+//    @Column(name = "CreateTime")
+//    private Date createTime;
+//    @Column(name = "SalesType")
+//    private int salesType;
+//    @Column(name = "SalesSize")
+//    private int salesSize;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

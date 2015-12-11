@@ -1,6 +1,7 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
@@ -85,8 +86,9 @@ public class GoodsServiceImpl implements GoodsService {
         List<MallGoodsBean> targetGoodList = new ArrayList<>();
         for (MallGoodsBean original : originalGoods) {
             int targetId = syncInfoService.getTargetId(original.getGoodsId(), Constant.GOOD, syncInfoList);
-            if (targetId > 0) {
-                MallGoodsBean targetGood = goodsRepository.findOne(targetId);
+            MallGoodsBean targetGood = goodsRepository.findOne(targetId);
+            if (targetGood != null) {
+
                 String priceLevelDesc = targetGood.getPriceLevelDesc();
                 ClassHandler.ClassCopy(original, targetGood);
                 targetGood.setCustomerId(targetCustomerId);
@@ -97,18 +99,18 @@ public class GoodsServiceImpl implements GoodsService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getGoodsId());
                 syncInfo.setFromCustomerId(targetCustomerId);
-                MallGoodsBean targetGood = (MallGoodsBean) original.clone();
-                targetGood.setGoodsId(null);
-                targetGood.setCustomerId(targetCustomerId);
-                targetGood.setLastModify(new Date());
-                targetGood.setPriceLevelDesc(null);
-                targetGood = goodsRepository.saveAndFlush(targetGood);
-                syncInfo.setToId(targetGood.getGoodsId());
+                MallGoodsBean newTarget = (MallGoodsBean) original.clone();
+                newTarget.setGoodsId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget.setLastModify(new Date());
+                newTarget.setPriceLevelDesc(null);
+                newTarget = goodsRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getGoodsId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.GOOD);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetGoodList.add(targetGood);
+                targetGoodList.add(newTarget);
             }
         }
         return targetGoodList;
@@ -196,9 +198,10 @@ public class GoodsServiceImpl implements GoodsService {
             target.setCatId(targetCatId);
             target.setBrandId(targetBrandId);
             target.setTypeId(targetTypeId);
-
-            int targetImgId = syncInfoService.getTargetId(Integer.parseInt(target.getImageDefault()), Constant.GOOD_Img, syncInfoList);
-            target.setImageDefault(String.valueOf(targetImgId));
+            if (!StringUtils.isEmpty(target.getImageDefault())) {
+                int targetImgId = syncInfoService.getTargetId(Integer.parseInt(target.getImageDefault()), Constant.GOOD_Img, syncInfoList);
+                target.setImageDefault(String.valueOf(targetImgId));
+            }
 
             //处理spec
             Map<String, String> originalSpec = objectMapper.readValue(target.getSpec(), Map.class);

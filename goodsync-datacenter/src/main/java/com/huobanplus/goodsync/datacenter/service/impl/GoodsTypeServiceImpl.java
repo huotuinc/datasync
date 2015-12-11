@@ -70,8 +70,8 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
         List<MallGoodsTypeBean> targetGoodsType = new ArrayList<>();
         for (MallGoodsTypeBean original : originalType) {
             int targetId = syncInfoService.getTargetId(original.getTypeId(), Constant.GOOD_TYPE, syncInfoList);
-            if (targetId > 0) {
-                MallGoodsTypeBean targetType = goodsTypeRepository.findOne(targetId);
+            MallGoodsTypeBean targetType = goodsTypeRepository.findOne(targetId);
+            if (targetType != null) {
                 ClassHandler.ClassCopy(original, targetType);
                 targetType.setCustomerId(targetCustomerId);
                 targetGoodsType.add(targetType);
@@ -80,15 +80,16 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getTypeId());
                 syncInfo.setFromCustomerId(original.getCustomerId());
-                MallGoodsTypeBean targetType = (MallGoodsTypeBean) original.clone();
-                targetType.setTypeId(null);
-                targetType.setCustomerId(targetCustomerId);
-                targetType = goodsTypeRepository.saveAndFlush(targetType);
-                syncInfo.setToId(targetType.getTypeId());
+                MallGoodsTypeBean newTarget = (MallGoodsTypeBean) original.clone();
+                newTarget.setTypeId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget = goodsTypeRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getTypeId());
                 syncInfo.setToCustomerId(targetCustomerId);
+                syncInfo.setType(Constant.GOOD_TYPE);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetGoodsType.add(targetType);
+                targetGoodsType.add(newTarget);
             }
         }
         return targetGoodsType;

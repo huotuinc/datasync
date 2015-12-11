@@ -1,9 +1,6 @@
 package com.huobanplus.goodsync.datacenter.common;
 
-import com.huobanplus.goodsync.datacenter.bean.MallBrandBean;
-import com.huobanplus.goodsync.datacenter.bean.MallGoodsBean;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -23,11 +20,15 @@ public class MessageHandler extends TextWebSocketHandler {
     }
 
     public void sendMessage(String msg) throws IOException {
-        try {
-            session.sendMessage(new TextMessage(msg));
-        } catch (IOException e) {
-            throw e;
-        } finally {
+//        if (session.isOpen()) {
+//            session.sendMessage(new TextMessage(msg));
+//        }
+    }
+
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        System.out.println(exception.getMessage());
+        if (session.isOpen()) {
             session.close();
         }
     }

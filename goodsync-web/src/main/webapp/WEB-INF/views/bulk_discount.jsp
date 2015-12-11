@@ -22,7 +22,6 @@
     <script type="text/javascript" src="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.8.20.min.js" />"></script>
     <link rel="stylesheet" type="text/css"
           href="<c:url value="/resources/scripts/jqueryui/jquery-ui-1.10.3.custom.min.css"/>">
-    <script type="text/javascript" src="<c:url value="/resources/scripts/sockjs-0.3.4.min.js" />"></script>
     <title>商品列表</title>
     <style type="text/css">
         .box {
@@ -47,7 +46,7 @@
     </style>
     <script type="text/javascript">
         var type = 0;
-        var huobanAjax = "<c:url value="/huobanmall/" />"
+        var huobanAjax = "<c:url value="/bulkDiscount" />"
         var ws;
         var isOpened = false;
         $(function () {
@@ -60,25 +59,10 @@
                 }
             });
 
-//            if (ws == null) {
-//                connectSocket();
-//            }
         });
 
-        function connectSocket() {
-            ws = new SockJS("<c:url value="/sync/message" />");
-            ws.onopen = function () {
-                console.log("Info: connection opened");
-                isOpened = true;
-            }
-            ws.onmessage = function (event) {
-                console.log("message:" + event.data);
-                $("#msgBench").append('<p>' + event.data + '</p>');
-            }
-        }
-
-        var exportHandler = {
-            export: function () {
+        var discountHandler = {
+            discount: function () {
                 var goodList = "";
                 if ($("#checkAll").attr("checked")) {
                     goodList = "all";
@@ -97,74 +81,39 @@
                     return;
                 }
                 $("#hbGoodList").val(goodList);
-                J.ShowDialogButton("export_dialog", "选择导出平台", {});
-            },
-            exportToHuoban: function () {
-                var goodList = $("#hbGoodList").val();
-                J.ShowDialog("export_huoban", "伙伴商城授权登录", function () {
-                    var account = $.trim($("#account").val());
-                    var password = $.trim($("#password").val());
-                    var requestData = {
-                        account: account,
-                        password: password
+
+                J.ShowDialog("bulkDiscount_dialog", "批量打折", function () {
+                    var self = this;
+                    var discount = $.trim($("#discount").val());
+                    if (discount.length == 0) {
+                        $.jBox.tip("请输入打折数");
+                        return;
                     }
-                    J.GetJsonRespons(huobanAjax + "authority", requestData, function (json) {
+                    $.jBox.tip("正在处理，请稍候...", "loading");
+                    J.GetJsonRespons(huobanAjax, {
+                        goodListStr: goodList,
+                        discount: discount
+                    }, function (json) {
                         if (json.resultCode == 200) {
-                            $.jBox.tip(json.desc, "success");
-                            setTimeout(function () {
-                                jBox.confirm('确定要信息同步到指定商户？将会更新覆盖已导出过的商品信息', '提示', function (v, h, f) {
-                                    if (v == "ok") {
-                                        $("#msgBench").html("");
-//                                        J.ShowDialogButton("msgBench_dialog", "导出进度", {
-//                                            "关闭": function () {
-//                                                $(this).dialog('close');
-//                                            }
-//                                        });
-                                        $.jBox.tip("正在导出商品及关联信息，这可能需要很长的时间，请不要关闭浏览器，保持网络畅通", "loading");
-                                        J.GetJsonRespons(huobanAjax + "export", {goodList: goodList}, function (json) {
-                                            if (json.resultCode == 200) {
-                                                $.jBox.tip(json.desc, "success");
-//                                                $("#msgBench").append("<p>" + json.desc + "</p>");
-                                                $.jBox.tip("已将所选商品导入到目标账户", "success");
-                                            }
-                                        }, function () {
-                                        }, J.PostMethod);
-                                    }
-                                    return true;
-                                });
-                            }, 400);
+                            $.jBox.tip("操作成功", "success");
+                            $(self).dialog("close");
                         } else {
-                            $.jBox.tip(json.desc);
+                            $.jBox.tip("操作失败", "error");
                         }
                     }, function () {
                     }, J.PostMethod);
                 }, function () {
-                    $(this).dialog('close');
+                    $(this).dialog("close");
                 })
             }
-        }
+        };
     </script>
 </head>
 <body style="background-color:#e4e7ea">
-<div id="export_dialog" style="padding:20px;display: none;">
-    <input type="hidden" id="hbGoodList"/>
+<div id="bulkDiscount_dialog" style="padding:20px;display: none;">
+    <p>打折：<input type="text" id="discount"/></p>
 
-    <div class="fg-button clearfix">
-        <a href="javascript:exportHandler.exportToHuoban();">导出到伙伴商城</a>
-    </div>
-
-    <div class="fg-button clearfix" style="margin-top: 57px;">
-        <a href="javascript:type=1;">导出到淘宝（敬请期待）</a>
-    </div>
-</div>
-<div id="export_huoban" style="padding:20px;display: none;">
-    <p>账户名：<input type="text" id="account"/></p>
-
-    <p>账户密码：<input type="password" id="password"/></p>
-</div>
-<div id="msgBench_dialog" style="padding: 20px;display:none;">
-    <div class="box" id="msgBench">
-    </div>
+    <p>如打8折则输入0.8</p>
 </div>
 <div class="contentpanel">
     <div class="block">
@@ -191,7 +140,7 @@
 
 
                                     <div class="fg-button clearfix" style="float:right">
-                                        <a href="javascript:exportHandler.export()">导出</a>
+                                        <a href="javascript:discountHandler.discount()">批量打折</a>
                                     </div>
 
                                 </td>

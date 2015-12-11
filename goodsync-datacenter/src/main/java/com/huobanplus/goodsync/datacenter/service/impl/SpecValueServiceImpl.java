@@ -68,9 +68,9 @@ public class SpecValueServiceImpl implements SpecValueService {
             throws IllegalAccessException, InvocationTargetException, InstantiationException, CloneNotSupportedException {
         List<MallSpecValuesBean> targetSpecValueList = new ArrayList<>();
         for (MallSpecValuesBean original : originalSpecValue) {
-            int targetId = syncInfoService.getTargetId(original.getSpecId(), Constant.SPEC_VALUE, syncInfoList);
-            if (targetId > 0) {
-                MallSpecValuesBean targetSpecValue = specValueRepository.findOne(targetId);
+            int targetId = syncInfoService.getTargetId(original.getSpecValueId(), Constant.SPEC_VALUE, syncInfoList);
+            MallSpecValuesBean targetSpecValue = specValueRepository.findOne(targetId);
+            if (targetSpecValue != null) {
                 ClassHandler.ClassCopy(original, targetSpecValue);
                 targetSpecValue.setCustomerId(targetCustomerId);
                 targetSpecValueList.add(targetSpecValue);
@@ -79,16 +79,16 @@ public class SpecValueServiceImpl implements SpecValueService {
                 MallSyncInfoBean syncInfo = new MallSyncInfoBean();
                 syncInfo.setFromId(original.getSpecValueId());
                 syncInfo.setFromCustomerId(targetCustomerId);
-                MallSpecValuesBean targetSpecValue = (MallSpecValuesBean) original.clone();
-                targetSpecValue.setSpecValueId(null);
-                targetSpecValue.setCustomerId(targetCustomerId);
-                targetSpecValue = specValueRepository.saveAndFlush(targetSpecValue);
-                syncInfo.setToId(targetSpecValue.getSpecValueId());
+                MallSpecValuesBean newTarget = (MallSpecValuesBean) original.clone();
+                newTarget.setSpecValueId(null);
+                newTarget.setCustomerId(targetCustomerId);
+                newTarget = specValueRepository.saveAndFlush(newTarget);
+                syncInfo.setToId(newTarget.getSpecValueId());
                 syncInfo.setToCustomerId(targetCustomerId);
                 syncInfo.setType(Constant.SPEC_VALUE);
                 syncInfo = syncInfoService.save(syncInfo);
                 syncInfoList.add(syncInfo);
-                targetSpecValueList.add(targetSpecValue);
+                targetSpecValueList.add(newTarget);
             }
         }
         return targetSpecValueList;
@@ -98,7 +98,7 @@ public class SpecValueServiceImpl implements SpecValueService {
     @Message(operation = "处理", desc = "规格值关联字段")
     public void handleSpecId(List<MallSpecValuesBean> targetList, List<MallSyncInfoBean> specSyncInfoList) {
         targetList.forEach(target -> {
-            int targetSpecId = syncInfoService.getTargetId(target.getSpecId(), Constant.SPEC_VALUE, specSyncInfoList);
+            int targetSpecId = syncInfoService.getTargetId(target.getSpecId(), Constant.SPEC, specSyncInfoList);
             target.setSpecId(targetSpecId);
             specValueRepository.save(target);
         });
