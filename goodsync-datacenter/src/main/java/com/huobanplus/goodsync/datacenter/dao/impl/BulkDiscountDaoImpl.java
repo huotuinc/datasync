@@ -64,16 +64,25 @@ public class BulkDiscountDaoImpl extends BaseDaoImpl implements BulkDiscountDao 
 
     @Override
     public List<MallProductBean> findUserPriceInfoByGoodId(int goodId) {
-        String sql = "SELECT Product_Id,UserPriceInfo,Goods_Id,Customer_Id from Mall_Products where Goods_Id=?";
+        String sql = "SELECT Product_Id,UserPriceInfo,Goods_Id,Customer_Id,Price from Mall_Products where Goods_Id=?";
         List<MallProductBean> productBeans = jdbcTemplate.query(sql, (resultSet, i) -> {
             MallProductBean productBean = new MallProductBean();
             productBean.setUserPriceInfo(resultSet.getString("UserPriceInfo"));
             productBean.setProductId(resultSet.getInt("Product_Id"));
             productBean.setGoodsId(resultSet.getInt("Goods_Id"));
             productBean.setCustomerId(resultSet.getInt("Customer_Id"));
+            productBean.setPrice(resultSet.getDouble("Price"));
             return productBean;
         }, goodId);
         return productBeans;
+    }
+
+    public List<Integer> findLevelsByCustomer(int customerId){
+        String sql = "SELECT UL_ID FROM Mall_UserLevel WHERE UL_CustomerID=?";
+        List<Integer> levels = jdbcTemplate.query(sql,(resultSet, i) -> {
+            return resultSet.getInt("UL_ID");
+        },customerId);
+        return levels;
     }
 
     @Override

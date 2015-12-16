@@ -29,10 +29,10 @@ public class BulkDiscountServiceImpl implements BulkDiscountService {
     @Override
     public void goodDiscount(int goodId, double discount) {
         //更新商品销售价
-        bulkDiscountDao.goodDiscount(goodId, discount);
+//        bulkDiscountDao.goodDiscount(goodId, discount);
 
         //更新货品销售价
-        bulkDiscountDao.productDiscount(goodId, discount);
+//        bulkDiscountDao.productDiscount(goodId, discount);
 
         //更新关联表和冗余字段
         //首先删除关联表中所有的信息
@@ -45,7 +45,7 @@ public class BulkDiscountServiceImpl implements BulkDiscountService {
                 String resultUserPriceInfoStr = "";
                 for (String userPriceStr : userPriceInfo) {
                     String[] userLvPrice = userPriceStr.split(":");
-                    double userPrice = Double.parseDouble(userLvPrice[1]);
+                    double userPrice = productBean.getPrice(); //Double.parseDouble(userLvPrice[1]);
                     int maxIntegral = Integer.parseInt(userLvPrice[2]);
                     BigDecimal userPriceDecimal = new BigDecimal(userPrice * discount);
                     userPrice = userPriceDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -65,6 +65,27 @@ public class BulkDiscountServiceImpl implements BulkDiscountService {
                 }
 
                 //保存货品冗余字段
+                bulkDiscountDao.updateProductUserPriceInfo(productBean.getProductId(), resultUserPriceInfoStr);
+            } else {
+                List<Integer> levels = bulkDiscountDao.findLevelsByCustomer(productBean.getCustomerId());
+                String resultUserPriceInfoStr = "";
+                for (Integer levelId : levels) {
+                    double userPrice = productBean.getPrice();
+                    BigDecimal userPriceDecimal = new BigDecimal(userPrice * discount);
+                    userPrice = userPriceDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    String resultUserPriceStr = levelId + ":" + userPrice + ":" + 0;
+                    resultUserPriceInfoStr += resultUserPriceStr + "|";
+
+                    //构造Mall_Goods_Lv_Price并保存
+                    MallGoodsLvPrice goodsLvPrice = new MallGoodsLvPrice();
+                    goodsLvPrice.setProductId(productBean.getProductId());
+                    goodsLvPrice.setLevelId(levelId);
+                    goodsLvPrice.setGoodsId(productBean.getGoodsId());
+                    goodsLvPrice.setPrice(userPrice);
+                    goodsLvPrice.setCustomerId(productBean.getCustomerId());
+                    goodsLvPrice.setMaxIntegral(0);
+                    bulkDiscountDao.saveGoodLvPrice(goodsLvPrice);
+                }
                 bulkDiscountDao.updateProductUserPriceInfo(productBean.getProductId(), resultUserPriceInfoStr);
             }
         }

@@ -25,5 +25,7 @@ public interface BulkDiscountDao {
 
     List<MallProductBean> findUserPriceInfoByGoodId(int goodId);
 
+    List<Integer> findLevelsByCustomer(int customerId);
+
     void updateProductUserPriceInfo(int productId, String userPriceInfo);
 }

@@ -86,6 +86,6 @@
 
     </dependencies>
     <build>
-        <finalName>goodsync-web</finalName>
+        <finalName>ROOT</finalName>
     </build>
 </project>
