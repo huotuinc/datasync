@@ -44,7 +44,7 @@ public class HBSyncHandler implements SyncHandler {
     }
 
     @Override
-    @Transactional
+    @Transactional(value = "transactionManager")
     public void goodExport(AuthorBaseBean authorBase, int loginCustomerId, String goodList)
             throws IOException, CloneNotSupportedException, IllegalAccessException, InvocationTargetException, InstantiationException {
         HBAuthorBean hbAuthorBean = (HBAuthorBean) authorBase;
