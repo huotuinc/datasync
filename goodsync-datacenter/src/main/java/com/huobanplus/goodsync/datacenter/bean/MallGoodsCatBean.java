@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Mall_Goods_Cat")
 @Data
-public class MallGoodsCatBean implements Cloneable{
+public class MallGoodsCatBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Cat_Id")
@@ -59,5 +59,18 @@ public class MallGoodsCatBean implements Cloneable{
             e.printStackTrace();
         }
         return o;
+    }
+
+    public int getCatDepth() {
+        return catPath.substring(1, catPath.length() - 1).split("\\|").length;
+    }
+
+    public String space() {
+        int catDepth = getCatDepth();
+        String space = "--";
+        for (int i = 0; i < catDepth; i++) {
+            space += space;
+        }
+        return space;
     }
 }

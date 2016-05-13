@@ -38,7 +38,7 @@ public class ExportService {
     private GoodsSpecIndexService specIndexService;
     @Autowired
     private SyncInfoService syncInfoService;
-
+    
     public void exportAdd(int currentCustomerId, int targetCustomerId, List<Integer> goods) throws IOException, CloneNotSupportedException {
         //导出brand及保存前后关联id
         List<MallBrandBean> originalBrandList = brandService.findByCustomerId(currentCustomerId);

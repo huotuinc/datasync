@@ -21,4 +21,6 @@ public interface GoodsRepository extends JpaRepository<MallGoodsBean, Integer> {
     @Query("delete from MallGoodsBean where customerId=?1")
     void deleteByCustomerId(int customerId);
 
+    List<MallGoodsBean> findByCatId(int catId);
+
 }

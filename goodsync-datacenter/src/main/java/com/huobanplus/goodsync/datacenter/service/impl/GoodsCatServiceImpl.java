@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by liual on 2015-09-02.
@@ -39,6 +40,28 @@ public class GoodsCatServiceImpl implements GoodsCatService {
     public List<MallGoodsCatBean> findByCustomerId(int customerId) {
         return goodsCatRepository.findByCustomerId(customerId);
     }
+
+    @Override
+    public List<MallGoodsCatBean> findAllByCustomerId(int customerId) {
+        List<MallGoodsCatBean> result = new ArrayList<>();
+        List<MallGoodsCatBean> allCate = findByCustomerId(customerId);
+        List<MallGoodsCatBean> roots = allCate.stream().filter(p -> p.getParentId() == 0).collect(Collectors.toList());
+        for (MallGoodsCatBean root : roots) {
+            //找孩子
+            result.add(root);
+            findChild(result, root.getCatId(), allCate);
+        }
+        return result;
+    }
+
+    private void findChild(List<MallGoodsCatBean> result, int parentId, List<MallGoodsCatBean> allCate) {
+        List<MallGoodsCatBean> children = allCate.stream().filter(p -> p.getParentId() == parentId).collect(Collectors.toList());
+        for (MallGoodsCatBean child : children) {
+            result.add(child);
+            findChild(result, child.getCatId(), allCate);
+        }
+    }
+
 
     @Override
     @Message(operation = "保存", desc = "商品分类信息")

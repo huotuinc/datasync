@@ -29,6 +29,14 @@ public interface GoodsService {
     MallGoodsBean findByGoodsId(int goodsId);
 
     /**
+     * 根据分类id得到商品列表
+     *
+     * @param cateId
+     * @return
+     */
+    List<MallGoodsBean> findByCateId(int cateId);
+
+    /**
      * 得到某商户的商品信息
      *
      * @param customerId

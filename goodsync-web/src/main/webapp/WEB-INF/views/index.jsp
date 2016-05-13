@@ -19,7 +19,8 @@
         }
     </style>
 </head>
-<body style="background-image: url(<c:url value="/resources/images/d7.jpg"/>); background-color: #111; background-repeat: no-repeat; background-size: cover">
+<body style="background-image: url(<c:url
+        value="/resources/images/d7.jpg"/>); background-color: #111; background-repeat: no-repeat; background-size: cover">
 <div style="position: relative; width: 1000px; margin: 0 auto">
     <div class="logo">
         <img src="images/logo-2013-l.png" style="width: 240px;"/>
@@ -55,6 +56,16 @@
                     <p>
                         <font style="font-size: 35px; font-family: 'Microsoft YaHei'; font-weight: normal">
                             商品批量打折
+                        </font>
+                    </p>
+                </a>
+            </li>
+            <li class="rens" style="width: 48%;margin-top: 20px;">
+                <a href="<c:url value="/catList"/>" title="">
+
+                    <p>
+                        <font style="font-size: 35px; font-family: 'Microsoft YaHei'; font-weight: normal">
+                            商品会员价批量设置
                         </font>
                     </p>
                 </a>

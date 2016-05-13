@@ -1,11 +1,9 @@
 package com.huobanplus.goodsync.datacenter.service;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.huobanplus.goodsync.datacenter.bean.MallGoodsBean;
-import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
-import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
-import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.bean.*;
 
+import javax.script.ScriptException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -87,4 +85,6 @@ public interface ProductService {
     void deleteByCustomerId(int customerId);
 
     List<MallProductBean> findByGoodsId(int goodId);
+
+    void batchSetUserPrice(String eval, MallGoodsBean good, List<MallLevel> levels) throws ScriptException;
 }

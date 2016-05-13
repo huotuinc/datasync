@@ -40,6 +40,11 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public List<MallGoodsBean> findByCateId(int cateId) {
+        return goodsRepository.findByCatId(cateId);
+    }
+
+    @Override
     public List<MallGoodsBean> findGoods(int customerId, List<Integer> goodList) {
         return goodList == null ? goodsRepository.findByCustomerId(customerId) : goodsRepository.findByCustomerIdAndGoodsIdIn(customerId, goodList);
     }

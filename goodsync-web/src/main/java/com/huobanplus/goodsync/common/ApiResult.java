@@ -16,4 +16,9 @@ public class ApiResult {
         apiResult.setDesc(desc);
         return apiResult;
     }
+    public static ApiResult resultWith(int resultCode) {
+        ApiResult apiResult = new ApiResult();
+        apiResult.setResultCode(resultCode);
+        return apiResult;
+    }
 }

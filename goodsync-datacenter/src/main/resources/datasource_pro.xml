@@ -13,7 +13,7 @@
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource"></property>
+        <property name="dataSource" ref="dataSource" />
         <property name="packagesToScan" value="com.huobanplus.goodsync.datacenter.bean"/>
         <property name="persistenceUnitName" value="basePu"/>
         <property name="persistenceProvider">

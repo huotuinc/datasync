@@ -1,22 +1,29 @@
 package com.huobanplus.goodsync.datacenter.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huobanplus.goodsync.datacenter.bean.MallProductBean;
-import com.huobanplus.goodsync.datacenter.bean.MallSyncInfoBean;
-import com.huobanplus.goodsync.datacenter.bean.SyncResultBean;
+import com.huobanplus.goodsync.datacenter.bean.*;
 import com.huobanplus.goodsync.datacenter.common.ClassHandler;
 import com.huobanplus.goodsync.datacenter.common.Constant;
 import com.huobanplus.goodsync.datacenter.common.Message;
 import com.huobanplus.goodsync.datacenter.json.ProductProps;
+import com.huobanplus.goodsync.datacenter.model.PriceLevelDesc;
 import com.huobanplus.goodsync.datacenter.repository.ProductRepository;
+import com.huobanplus.goodsync.datacenter.service.GoodsService;
+import com.huobanplus.goodsync.datacenter.service.LevelService;
 import com.huobanplus.goodsync.datacenter.service.ProductService;
 import com.huobanplus.goodsync.datacenter.service.SyncInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -29,6 +36,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private SyncInfoService syncInfoService;
+    @Autowired
+    private GoodsService goodsService;
 
     @Override
     public List<MallProductBean> findByCustomerId(int customerId) {
@@ -171,5 +180,74 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<MallProductBean> findByGoodsId(int goodId) {
         return productRepository.findByGoodsId(goodId);
+    }
+
+    @Override
+    @Transactional(value = "transactionManager")
+    public void batchSetUserPrice(String eval, MallGoodsBean good, List<MallLevel> levels) throws ScriptException {
+        List<MallProductBean> productBeans = this.findByGoodsId(good.getGoodsId());
+
+        double minPrice = 0, maxPrice = 0;
+        for (MallProductBean product : productBeans) {
+            ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+            //设置会员价,a是成本价,b是市场价,c是销售价
+            eval = eval.replaceAll("a", String.valueOf(product.getCost()));
+            eval = eval.replaceAll("b", String.valueOf(product.getMktPrice()));
+            eval = eval.replaceAll("c", String.valueOf(product.getPrice()));
+            double resultPrice = Double.parseDouble(scriptEngine.eval(eval).toString());
+            resultPrice = BigDecimal.valueOf(resultPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            String userPriceInfo = "";
+            if (product.getGoodLvPriceList() == null || product.getGoodLvPriceList().size() == 0) {
+                List<MallGoodLvPrice> goodLvPriceList = new ArrayList<>();
+                for (MallLevel level : levels) {
+                    MallGoodLvPrice goodLvPrice = new MallGoodLvPrice();
+                    goodLvPrice.setPrice(resultPrice);
+                    goodLvPrice.setCustomerId(good.getCustomerId());
+                    goodLvPrice.setGoodsId(good.getGoodsId());
+                    goodLvPrice.setLevel(level.getId());
+                    goodLvPriceList.add(goodLvPrice);
+                    userPriceInfo += level.getId() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+                }
+                product.setGoodLvPriceList(goodLvPriceList);
+            } else {
+                for (MallGoodLvPrice goodLvPrice : product.getGoodLvPriceList()) {
+                    goodLvPrice.setPrice(resultPrice);
+                    //货品冗余字段
+                    userPriceInfo += goodLvPrice.getLevel() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+                }
+            }
+            //处理冗余字段
+            product.setUserPriceInfo(userPriceInfo.substring(0, userPriceInfo.length() - 1));
+
+            if (minPrice == 0 || minPrice >= resultPrice) {
+                minPrice = resultPrice;
+            }
+            if (resultPrice >= maxPrice) {
+                maxPrice = resultPrice;
+            }
+        }
+        productRepository.save(productBeans);
+        //处理商品冗余字段
+        if (StringUtils.isEmpty(good.getPriceLevelDesc())) {
+            good.setPriceLevelDesc("[]");
+        }
+        List<PriceLevelDesc> priceLevelDescList = JSON.parseArray(good.getPriceLevelDesc(), PriceLevelDesc.class);
+        if (priceLevelDescList.size() > 0) {
+            for (PriceLevelDesc priceLevelDesc : priceLevelDescList) {
+                priceLevelDesc.setMinPrice(minPrice);
+                priceLevelDesc.setMaxPrice(maxPrice);
+            }
+        } else {
+            priceLevelDescList = new ArrayList<>();
+            for (MallLevel level : levels) {
+                PriceLevelDesc priceLevelDesc = new PriceLevelDesc();
+                priceLevelDesc.setLevelId(level.getId());
+                priceLevelDesc.setMinPrice(minPrice);
+                priceLevelDesc.setMaxPrice(maxPrice);
+                priceLevelDescList.add(priceLevelDesc);
+            }
+        }
+        good.setPriceLevelDesc(JSON.toJSONString(priceLevelDescList));
+        goodsService.save(good);
     }
 }

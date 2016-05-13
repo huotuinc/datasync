@@ -1,6 +1,8 @@
 package com.huobanplus.goodsync.datacenter.bean;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -10,7 +12,9 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "Mall_Brand")
-@Data
+@Setter
+@Getter
+@Cacheable(false)
 public class MallBrandBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

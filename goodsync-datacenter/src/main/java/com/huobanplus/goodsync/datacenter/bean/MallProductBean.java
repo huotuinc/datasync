@@ -1,16 +1,22 @@
 package com.huobanplus.goodsync.datacenter.bean;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liual on 2015-09-01.
  */
 @Entity
 @Table(name = "Mall_Products")
-@Data
+@Setter
+@Getter
+@Cacheable(false)
 public class MallProductBean implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,8 +68,13 @@ public class MallProductBean implements Cloneable {
     private String userPriceInfo;
     @Column(name = "UserIntegralInfo")
     private String userIntegralInfo;
-//    @Column(name = "TestUserIntegralInfo")
-//    private String testUserIntegralInfo;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "Mall_Goods_Lv_Price",
+            joinColumns = @JoinColumn(name = "Product_Id")
+    )
+    private List<MallGoodLvPrice> goodLvPriceList;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

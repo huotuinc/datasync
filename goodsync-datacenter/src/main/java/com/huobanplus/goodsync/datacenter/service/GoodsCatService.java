@@ -28,6 +28,8 @@ public interface GoodsCatService {
      */
     List<MallGoodsCatBean> findByCustomerId(int customerId);
 
+    List<MallGoodsCatBean> findAllByCustomerId(int customerId);
+
     /**
      * 批量导入新商户，返回导入前后的id关联信息
      *

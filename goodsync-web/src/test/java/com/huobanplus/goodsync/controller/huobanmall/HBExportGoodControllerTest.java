@@ -19,6 +19,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -78,5 +82,18 @@ public class HBExportGoodControllerTest extends SpringMvcTest {
 //                .session(mockHttpSession))
 //                .andDo(print())
 //                .andExpect(status().isOk());
+    }
+
+    public static void main(String[] args) {
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+        String eval = "(4+6)/3";
+        double resultPrice = 0;
+        try {
+            resultPrice = Double.parseDouble(scriptEngine.eval(eval).toString());
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+        resultPrice = BigDecimal.valueOf(resultPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        System.out.println(resultPrice);
     }
 }
