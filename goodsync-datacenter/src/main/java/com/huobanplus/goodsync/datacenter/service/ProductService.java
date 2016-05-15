@@ -7,6 +7,7 @@ import javax.script.ScriptException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 货品
@@ -86,5 +87,11 @@ public interface ProductService {
 
     List<MallProductBean> findByGoodsId(int goodId);
 
-    void batchSetUserPrice(String eval, MallGoodsBean good, List<MallLevel> levels) throws ScriptException;
+    /**
+     * 设置用户会员价
+     *
+     * @param levelsToSet 要设置的等级及对应的公式列表
+     * @param goods       要应用设置的商品列表
+     */
+    void batchSetUserPrice(Map<Integer, String> levelsToSet, List<MallGoodsBean> goods, int customerId) throws ScriptException;
 }

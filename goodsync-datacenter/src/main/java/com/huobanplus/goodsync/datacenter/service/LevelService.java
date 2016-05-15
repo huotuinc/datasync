@@ -9,4 +9,12 @@ import java.util.List;
  */
 public interface LevelService {
     List<MallLevel> findByCustomerId(int customerId);
+
+    /**
+     * 得到等级列表,先普通会员,在小伙伴的排序
+     *
+     * @param customerId
+     * @return
+     */
+    List<MallLevel> findByCustomerIdWithOrder(int customerId);
 }

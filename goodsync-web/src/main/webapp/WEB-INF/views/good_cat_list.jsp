@@ -51,41 +51,91 @@
                 J.ShowDialog("bulkDiscount_dialog", "批量设置", function () {
                     var self = this;
                     var cateIdList = "";
+                    var index = true;
                     $("input[name='chkCateId']:checked").each(function () {
                         cateIdList += $(this).val() + ",";
                     });
-                    var evalStr = $.trim($("#evalStr").val());
-                    if (evalStr.length == 0) {
-                        $.jBox.tip("请输入计算公式");
-                        return;
-                    }
-                    var requestData = {
-                        evalStr: evalStr,
-                        cateIdList: cateIdList.substring(0, cateIdList.length - 1)
-                    };
-                    $.jBox.tip("正在设置...", "loading");
-                    J.GetJsonRespons(ajaxUrl, requestData, function (json) {
-                        if (json.resultCode == 200) {
-                            $.jBox.tip("设置成功", "success");
-                        } else {
-                            $.jBox.tip("设置失败" + json.desc, "error");
+
+                    var evalInfos = ""; //levelId:eval,levelId:eval
+
+                    $("input[name=chkLevel]:checked").each(function () {
+                        var levelId = $(this).val();
+                        var eval = $("#evel" + levelId).val();
+                        if (eval.length == 0) {
+                            $.jBox.tip("还没有输入计算公式");
+                            index = false;
+                            return false;
                         }
-                        $(self).dialog("close");
-                    }, function () {
-                    }, "post");
+                        evalInfos += levelId + ":" + eval + ",";
+                    });
+
+                    if (index) {
+                        var requestData = {
+                            evalInfos: evalInfos,
+                            cateIdList: cateIdList.substring(0, cateIdList.length - 1)
+                        };
+                        $.jBox.tip("正在设置...", "loading");
+                        J.GetJsonRespons(ajaxUrl, requestData, function (json) {
+                            if (json.resultCode == 200) {
+                                $.jBox.tip("设置成功", "success");
+                            } else {
+                                $.jBox.tip("设置失败" + json.desc, "error");
+                            }
+                            $(self).dialog("close");
+                        }, function () {
+                        }, "post");
+                    }
                 }, function () {
                     $(this).dialog("close");
                 })
             }
-        }
+        };
+
+        $(function () {
+            $("#levelCheckAll").change(function () {
+                if ($(this).attr("checked")) {
+                    $("input[name=chkLevel]").attr("checked", "checked");
+                } else {
+                    $("input[name=chkLevel]").removeAttr("checked", "checked");
+                }
+            })
+        })
     </script>
 </head>
 <body style="background-color:#e4e7ea">
 <div id="bulkDiscount_dialog" style="padding:20px;display: none;">
-
-    <p>请输入公式：<input type="text" id="evalStr">
-
-    <p>a是成本价,b是市场价,c是销售价,批量设置以后将会批量更新商品的会员价</p>
+    <div class="dataTables_wrapper">
+        <table width="100%" class="table_appss tablept5">
+            <thead>
+            <tr class="sdkbar" style="font-weight:bold;">
+                <th align="center" rowspan="1" colspan="1">
+                    <input type="checkbox" id="levelCheckAll"/>
+                </th>
+                <th align="center" rowspan="1" colspan="1">分类名称</th>
+                <th align="center" rowspan="1" colspan="1">公式</th>
+            </tr>
+            </thead>
+            <!---表头---->
+            <tbody>
+            <c:forEach var="level" items="${levels}">
+                <tr height="28px" class="odd">
+                    <td align="center" style="width: 50px;">
+                        <input type="checkbox" name="chkLevel" value="${level.id}"/>
+                    </td>
+                    <td align="center">
+                            ${level.levelName}
+                    </td>
+                    <td>
+                        <input type="text" id="evel${level.id}"/>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+            <!---内容---->
+        </table>
+        <p style=" clear:both"></p>
+    </div>
+    <p>请输入公式:a是成本价,b是市场价,c是销售价,批量设置以后将会批量更新商品的会员价</p>
 </div>
 <div class="contentpanel">
     <div class="block">

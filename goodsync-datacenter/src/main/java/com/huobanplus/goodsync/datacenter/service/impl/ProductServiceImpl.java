@@ -38,6 +38,8 @@ public class ProductServiceImpl implements ProductService {
     private SyncInfoService syncInfoService;
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private LevelService levelService;
 
     @Override
     public List<MallProductBean> findByCustomerId(int customerId) {
@@ -182,72 +184,110 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByGoodsId(goodId);
     }
 
+
     @Override
     @Transactional(value = "transactionManager")
-    public void batchSetUserPrice(String eval, MallGoodsBean good, List<MallLevel> levels) throws ScriptException {
-        List<MallProductBean> productBeans = this.findByGoodsId(good.getGoodsId());
+    public void batchSetUserPrice(Map<Integer, String> levelsToSet, List<MallGoodsBean> goods, int customerId) throws ScriptException {
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 
-        double minPrice = 0, maxPrice = 0;
-        for (MallProductBean product : productBeans) {
-            ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
-            //设置会员价,a是成本价,b是市场价,c是销售价
-            eval = eval.replaceAll("a", String.valueOf(product.getCost()));
-            eval = eval.replaceAll("b", String.valueOf(product.getMktPrice()));
-            eval = eval.replaceAll("c", String.valueOf(product.getPrice()));
-            double resultPrice = Double.parseDouble(scriptEngine.eval(eval).toString());
-            resultPrice = BigDecimal.valueOf(resultPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            String userPriceInfo = "";
-            if (product.getGoodLvPriceList() == null || product.getGoodLvPriceList().size() == 0) {
-                List<MallGoodLvPrice> goodLvPriceList = new ArrayList<>();
-                for (MallLevel level : levels) {
-                    MallGoodLvPrice goodLvPrice = new MallGoodLvPrice();
-                    goodLvPrice.setPrice(resultPrice);
-                    goodLvPrice.setCustomerId(good.getCustomerId());
-                    goodLvPrice.setGoodsId(good.getGoodsId());
-                    goodLvPrice.setLevel(level.getId());
-                    goodLvPriceList.add(goodLvPrice);
-                    userPriceInfo += level.getId() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+        List<MallLevel> levels = levelService.findByCustomerId(296);
+        for (MallGoodsBean good : goods) {
+            List<MallProductBean> productBeans = this.findByGoodsId(good.getGoodsId());
+
+            double minPrice = 0, maxPrice = 0;
+            for (MallProductBean product : productBeans) {
+                String userPriceInfo = "";
+                if (product.getGoodLvPriceList() == null || product.getGoodLvPriceList().size() == 0) {
+                    List<MallGoodLvPrice> goodLvPriceList = new ArrayList<>();
+                    for (MallLevel level : levels) {
+                        String eval = levelsToSet.get(level.getId());
+                        double resultPrice = -1; //默认的价格
+                        if (!StringUtils.isEmpty(eval)) {
+                            resultPrice = getResultPrice(eval, product.getCost(), product.getPrice(), product.getMktPrice(), scriptEngine);
+                        }
+                        MallGoodLvPrice goodLvPrice = new MallGoodLvPrice();
+                        goodLvPrice.setPrice(resultPrice);
+                        goodLvPrice.setCustomerId(good.getCustomerId());
+                        goodLvPrice.setGoodsId(good.getGoodsId());
+                        goodLvPrice.setLevel(level.getId());
+                        goodLvPriceList.add(goodLvPrice);
+                        //货品冗余字段
+
+                        userPriceInfo += level.getId() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+
+                        if (minPrice == 0 || minPrice >= resultPrice) {
+                            minPrice = resultPrice;
+                        }
+                        if (resultPrice >= maxPrice) {
+                            maxPrice = resultPrice;
+                        }
+                    }
+                    product.setGoodLvPriceList(goodLvPriceList);
+                } else {
+                    for (MallGoodLvPrice goodLvPrice : product.getGoodLvPriceList()) {
+                        String eval = levelsToSet.get(goodLvPrice.getLevel());
+                        double resultPrice = -1;
+                        if (!StringUtils.isEmpty(eval)) {
+                            resultPrice = getResultPrice(eval, product.getCost(), product.getPrice(), product.getMktPrice(), scriptEngine);
+                            goodLvPrice.setPrice(resultPrice);
+                        }
+                        //货品冗余字段
+                        userPriceInfo += goodLvPrice.getLevel() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+
+                        if (minPrice == 0 || minPrice >= resultPrice) {
+                            minPrice = resultPrice;
+                        }
+                        if (resultPrice >= maxPrice) {
+                            maxPrice = resultPrice;
+                        }
+                    }
                 }
-                product.setGoodLvPriceList(goodLvPriceList);
+                //处理冗余字段
+                product.setUserPriceInfo(userPriceInfo.substring(0, userPriceInfo.length() - 1));
+            }
+
+            productRepository.save(productBeans);
+            //处理商品冗余字段
+            if (StringUtils.isEmpty(good.getPriceLevelDesc())) {
+                good.setPriceLevelDesc("[]");
+            }
+            List<PriceLevelDesc> priceLevelDescList = JSON.parseArray(good.getPriceLevelDesc(), PriceLevelDesc.class);
+            if (priceLevelDescList.size() > 0) {
+                for (PriceLevelDesc priceLevelDesc : priceLevelDescList) {
+                    priceLevelDesc.setMinPrice(minPrice);
+                    priceLevelDesc.setMaxPrice(maxPrice);
+                }
             } else {
-                for (MallGoodLvPrice goodLvPrice : product.getGoodLvPriceList()) {
-                    goodLvPrice.setPrice(resultPrice);
-                    //货品冗余字段
-                    userPriceInfo += goodLvPrice.getLevel() + ":" + resultPrice + ":" + goodLvPrice.getMaxIntegral() + "|";
+                priceLevelDescList = new ArrayList<>();
+                for (MallLevel level : levels) {
+                    PriceLevelDesc priceLevelDesc = new PriceLevelDesc();
+                    priceLevelDesc.setLevelId(level.getId());
+                    priceLevelDesc.setMinPrice(minPrice);
+                    priceLevelDesc.setMaxPrice(maxPrice);
+                    priceLevelDescList.add(priceLevelDesc);
                 }
             }
-            //处理冗余字段
-            product.setUserPriceInfo(userPriceInfo.substring(0, userPriceInfo.length() - 1));
+            good.setPriceLevelDesc(JSON.toJSONString(priceLevelDescList));
+            goodsService.save(good);
+        }
+    }
 
-            if (minPrice == 0 || minPrice >= resultPrice) {
-                minPrice = resultPrice;
-            }
-            if (resultPrice >= maxPrice) {
-                maxPrice = resultPrice;
-            }
-        }
-        productRepository.save(productBeans);
-        //处理商品冗余字段
-        if (StringUtils.isEmpty(good.getPriceLevelDesc())) {
-            good.setPriceLevelDesc("[]");
-        }
-        List<PriceLevelDesc> priceLevelDescList = JSON.parseArray(good.getPriceLevelDesc(), PriceLevelDesc.class);
-        if (priceLevelDescList.size() > 0) {
-            for (PriceLevelDesc priceLevelDesc : priceLevelDescList) {
-                priceLevelDesc.setMinPrice(minPrice);
-                priceLevelDesc.setMaxPrice(maxPrice);
-            }
-        } else {
-            priceLevelDescList = new ArrayList<>();
-            for (MallLevel level : levels) {
-                PriceLevelDesc priceLevelDesc = new PriceLevelDesc();
-                priceLevelDesc.setLevelId(level.getId());
-                priceLevelDesc.setMinPrice(minPrice);
-                priceLevelDesc.setMaxPrice(maxPrice);
-                priceLevelDescList.add(priceLevelDesc);
-            }
-        }
-        good.setPriceLevelDesc(JSON.toJSONString(priceLevelDescList));
-        goodsService.save(good);
+    /**
+     * 根据公式得到目标价格
+     *
+     * @param eval
+     * @param cost        成本价
+     * @param price       销售价
+     * @param marketPrice 市场价
+     * @return
+     */
+    private double getResultPrice(String eval, double cost, double price, double marketPrice, ScriptEngine scriptEngine) throws ScriptException {
+        eval = eval.replaceAll("a", String.valueOf(cost));
+        eval = eval.replaceAll("b", String.valueOf(marketPrice));
+        eval = eval.replaceAll("c", String.valueOf(price));
+        double resultPrice = Double.parseDouble(scriptEngine.eval(eval).toString());
+        resultPrice = BigDecimal.valueOf(resultPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); //目标价格
+
+        return resultPrice;
     }
 }

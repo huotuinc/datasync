@@ -180,18 +180,6 @@ public class MallGoodsBean implements Cloneable {
     private int imgUpdateStatus;
     @Column(name = "Customer_Id")
     private int customerId;
-    //    @Transient
-//    @Column(name = "Ex_Parameters")
-//    private String exParameters;
-//    @Transient
-//    @Column(name = "Ex_Consult")
-//    private String exConsult;
-//    @Transient
-//    @Column(name = "Ex_ShoppintTips")
-//    private String exShoppingTips;
-//    @Transient
-//    @Column(name = "GroupPurchase_For")
-//    private int groupPurchaseFor;
     @Column(name = "SellTags_Custom")
     private int sellTagsCustom;
     @Column(name = "SellTags")
